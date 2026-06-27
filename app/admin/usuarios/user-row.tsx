@@ -45,16 +45,13 @@ export function UserRow({ user }: { user: User }) {
           </button>
           <div className="min-w-0 flex-1" onClick={() => setOpen(!open)} role="button" tabIndex={0}>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="font-medium">@{user.username}</span>
+              <span className="font-mono font-medium">@{user.username}</span>
               <Badge variant="outline" className="font-mono text-xs">{user.anon_id}</Badge>
               <Badge variant={user.rol === 'super_admin' ? 'warning' : 'secondary'}>{user.rol}</Badge>
               {user.kyc_verificado_at && <Badge variant="default">KYC</Badge>}
               {banned && <Badge variant="warning">BANEADO</Badge>}
             </div>
-            <p className="truncate text-xs text-muted-foreground">
-              {user.nombre_real ? <span className="text-foreground">{user.nombre_real}</span> : <span className="italic">sin nombre real</span>}
-              {' · '}{user.email || '(sin email)'}
-            </p>
+            <p className="truncate text-xs text-muted-foreground">{user.email || '(sin email)'}</p>
             {banned && user.banned_motivo && (
               <p className="mt-1 text-xs text-destructive">Motivo: {user.banned_motivo}</p>
             )}
@@ -62,6 +59,13 @@ export function UserRow({ user }: { user: User }) {
         </div>
 
         {open && (
+          <>
+          <div className="mt-4 rounded-md border border-amber-500/30 bg-amber-500/5 px-3 py-2">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">PII privada — solo super_admin</p>
+            <p className="mt-1 text-sm">
+              {user.nombre_real ? <span className="font-medium">{user.nombre_real}</span> : <span className="italic text-muted-foreground">Sin nombre real cargado</span>}
+            </p>
+          </div>
           <div className="mt-4 grid gap-4 border-t border-border/60 pt-4 md:grid-cols-3">
             {/* Cambiar rol */}
             <form action={roleAction} className="space-y-2">
@@ -106,6 +110,7 @@ export function UserRow({ user }: { user: User }) {
               {pwState?.ok && <p className="text-xs text-primary">Password actualizada.</p>}
             </form>
           </div>
+          </>
         )}
       </CardContent>
     </Card>

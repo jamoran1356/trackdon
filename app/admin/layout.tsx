@@ -85,7 +85,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
         <div className="border-t border-border/60 bg-background">
           <div className="px-4 py-3 text-xs">
-            <p className="font-medium text-foreground">{user.nombre ?? 'super admin'}</p>
+            <p className="font-medium text-foreground font-mono">@{user.username}</p>
             <p className="truncate text-muted-foreground">{user.email}</p>
           </div>
           <Link
