@@ -5,10 +5,16 @@ import { Stat } from '@/components/ui/stat';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatUsd, formatNumber } from '@/lib/utils';
-import { mockTotales, mockDonacionesPublicas, mockCentros, mockInfluencers } from '@/lib/mock';
+import {
+  getTotalesPublico,
+  getDonacionesRecientes,
+  getCentrosActivos,
+  getInfluencersConRendicion
+} from '@/lib/supabase/queries';
 import { Box, HeartHandshake, Megaphone, ShieldCheck, Users, Wallet } from 'lucide-react';
 
 export const metadata = { title: 'Panel público' };
+export const revalidate = 60;  // refresh aggregates once per minute
 
 const estadoBadge: Record<string, { label: string; v: 'default' | 'success' | 'warning' | 'info' }> = {
   pendiente: { label: 'Pendiente', v: 'warning' },
@@ -17,13 +23,41 @@ const estadoBadge: Record<string, { label: string; v: 'default' | 'success' | 'w
   distribuida: { label: 'Distribuida', v: 'success' }
 };
 
-export default function PublicoPage() {
+const tipoCentroLabel: Record<string, string> = {
+  fisico: 'Físico',
+  comprador_medicamentos: 'Compras medicamentos'
+};
+
+function relativeTime(iso: string | null | undefined): string {
+  if (!iso) return '';
+  const ms = Date.now() - new Date(iso).getTime();
+  if (ms < 60_000) return 'ahora';
+  const m = Math.floor(ms / 60_000);
+  if (m < 60) return `hace ${m} min`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `hace ${h} h`;
+  const d = Math.floor(h / 24);
+  return `hace ${d} d`;
+}
+
+export default async function PublicoPage() {
+  const [totales, donacionesRes, centrosRes, influencersRes] = await Promise.all([
+    getTotalesPublico(),
+    getDonacionesRecientes(8),
+    getCentrosActivos(8),
+    getInfluencersConRendicion(8)
+  ]);
+
+  const donaciones = donacionesRes.data;
+  const centros = centrosRes.data;
+  const influencers = influencersRes.data;
+
   return (
     <>
       <SiteHeader />
       <main className="container py-8 md:py-12">
         <div className="mb-8 flex flex-col gap-3 md:mb-12">
-          <Badge variant="outline" className="w-fit">Vista pública · datos mock</Badge>
+          <Badge variant="outline" className="w-fit">Vista pública · datos en vivo</Badge>
           <h1 className="text-3xl font-bold tracking-tight md:text-4xl">Panel público</h1>
           <p className="max-w-2xl text-muted-foreground">
             Cualquier persona puede ver desde aquí cuánto se ha movido,
@@ -35,12 +69,12 @@ export default function PublicoPage() {
 
         {/* Stats */}
         <section className="grid gap-3 md:grid-cols-3 lg:grid-cols-6">
-          <Stat label="Total donado" value={formatUsd(mockTotales.total_donaciones_usd)} icon={<Wallet className="h-5 w-5" />} />
-          <Stat label="Donaciones" value={formatNumber(mockTotales.cantidad_donaciones)} icon={<HeartHandshake className="h-5 w-5" />} />
-          <Stat label="Centros activos" value={String(mockTotales.centros_activos)} icon={<Box className="h-5 w-5" />} />
-          <Stat label="Influencers" value={String(mockTotales.influencers_activos)} icon={<Megaphone className="h-5 w-5" />} />
-          <Stat label="Damnificados" value={formatNumber(mockTotales.damnificados_registrados)} icon={<Users className="h-5 w-5" />} />
-          <Stat label="Total rendido" value={formatUsd(mockTotales.total_rendido_usd)} icon={<ShieldCheck className="h-5 w-5" />} />
+          <Stat label="Total donado" value={formatUsd(Number(totales.total_donaciones_usd))} icon={<Wallet className="h-5 w-5" />} />
+          <Stat label="Donaciones" value={formatNumber(Number(totales.cantidad_donaciones))} icon={<HeartHandshake className="h-5 w-5" />} />
+          <Stat label="Centros activos" value={String(totales.centros_activos)} icon={<Box className="h-5 w-5" />} />
+          <Stat label="Influencers" value={String(totales.influencers_activos)} icon={<Megaphone className="h-5 w-5" />} />
+          <Stat label="Damnificados" value={formatNumber(Number(totales.damnificados_registrados))} icon={<Users className="h-5 w-5" />} />
+          <Stat label="Total rendido" value={formatUsd(Number(totales.total_rendido_usd))} icon={<ShieldCheck className="h-5 w-5" />} />
         </section>
 
         {/* Donaciones recientes */}
@@ -52,23 +86,32 @@ export default function PublicoPage() {
             </Link>
           </div>
           <Card className="mt-4 overflow-hidden">
-            <div className="divide-y divide-border">
-              {mockDonacionesPublicas.map((d) => (
-                <div key={d.id} className="grid gap-2 p-4 md:grid-cols-[1fr_auto_auto] md:items-center md:gap-6">
-                  <div>
-                    <p className="font-medium">{d.descripcion}</p>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {d.donante} → {d.centro}
-                    </p>
-                  </div>
-                  <p className="font-mono text-sm md:text-base">{formatUsd(d.valor)}</p>
-                  <div className="flex items-center gap-2">
-                    <Badge variant={estadoBadge[d.estado].v}>{estadoBadge[d.estado].label}</Badge>
-                    <span className="text-xs text-muted-foreground">hace {d.creado}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
+            {donaciones.length === 0 ? (
+              <div className="p-8 text-center text-sm text-muted-foreground">
+                Todavía no hay donaciones registradas. Sé el primero — pulsa <Link href="/donar" className="text-primary hover:underline">Donar</Link>.
+              </div>
+            ) : (
+              <div className="divide-y divide-border">
+                {donaciones.map((d: any) => {
+                  const destino = d.centro?.nombre ?? d.influencer?.nombre_publico ?? 'Sin destino aún';
+                  const donante = d.donante?.nombre_mostrado ?? 'Anónimo';
+                  const e = estadoBadge[d.estado] ?? { label: d.estado, v: 'default' as const };
+                  return (
+                    <div key={d.id} className="grid gap-2 p-4 md:grid-cols-[1fr_auto_auto] md:items-center md:gap-6">
+                      <div>
+                        <p className="font-medium">{d.descripcion ?? 'Donación'}</p>
+                        <p className="mt-1 text-sm text-muted-foreground">{donante} → {destino}</p>
+                      </div>
+                      <p className="font-mono text-sm md:text-base">{formatUsd(Number(d.valor_estimado_usd ?? 0))}</p>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={e.v}>{e.label}</Badge>
+                        <span className="text-xs text-muted-foreground">{relativeTime(d.creado_at)}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </Card>
         </section>
 
@@ -77,18 +120,20 @@ export default function PublicoPage() {
           <Card>
             <CardHeader>
               <CardTitle>Centros de acopio activos</CardTitle>
-              <CardDescription>Volumen actual e items registrados.</CardDescription>
+              <CardDescription>Centros operando ahora.</CardDescription>
             </CardHeader>
             <CardContent className="divide-y divide-border p-0">
-              {mockCentros.map((c) => (
+              {centros.length === 0 ? (
+                <p className="p-6 text-sm text-muted-foreground">No hay centros activos todavía.</p>
+              ) : centros.map((c: any) => (
                 <div key={c.id} className="flex items-center justify-between p-4">
                   <div>
                     <p className="font-medium">{c.nombre}</p>
                     <p className="text-xs text-muted-foreground">
-                      {c.tipo === 'fisico' ? 'Físico' : 'Compras medicamentos'} · último mov. hace {c.ultimo}
+                      {tipoCentroLabel[c.tipo] ?? c.tipo} · alta {relativeTime(c.creado_at)}
                     </p>
                   </div>
-                  <p className="font-mono text-sm tabular-nums">{formatNumber(c.items)} items</p>
+                  <Badge variant="success">activo</Badge>
                 </div>
               ))}
             </CardContent>
@@ -99,7 +144,9 @@ export default function PublicoPage() {
               <CardDescription>Recibido vs. ya rendido (con comprobante).</CardDescription>
             </CardHeader>
             <CardContent className="divide-y divide-border p-0">
-              {mockInfluencers.map((i) => {
+              {influencers.length === 0 ? (
+                <p className="p-6 text-sm text-muted-foreground">No hay influencers registrados todavía.</p>
+              ) : influencers.map((i) => {
                 const pct = i.recibido ? Math.round((i.rendido / i.recibido) * 100) : 0;
                 return (
                   <div key={i.id} className="p-4">
@@ -113,7 +160,11 @@ export default function PublicoPage() {
                       <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${pct}%` }} />
                     </div>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      {pct === 100 ? 'Rendición completa' : `${pct}% rendido · ${formatUsd(i.pendiente)} pendiente`}
+                      {i.recibido === 0
+                        ? 'Sin donaciones todavía'
+                        : pct === 100
+                          ? 'Rendición completa'
+                          : `${pct}% rendido · ${formatUsd(i.pendiente)} pendiente`}
                     </p>
                   </div>
                 );
