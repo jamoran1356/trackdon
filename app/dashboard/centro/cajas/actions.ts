@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createSupabaseAdmin } from '@/lib/supabase/server';
 import { getSessionUser } from '@/lib/auth';
+import { uploadFile } from '@/lib/supabase/storage';
 
 export type CentroCajaState = { error?: string; ok?: boolean } | null;
 
@@ -69,6 +70,30 @@ export async function cambiarEstado(_prev: CentroCajaState, formData: FormData):
         .limit(1);
     }
 
+    // Si es transición a "recibida" → registrar acuso de recibo con foto + personal opcionales
+    if (estado_nuevo === 'recibida') {
+      const foto = formData.get('foto') as File | null;
+      const personal_id = String(formData.get('personal_id') ?? '') || null;
+      const acuso_nota = nota;
+
+      let foto_media_id: string | null = null;
+      if (foto && typeof foto === 'object' && foto.size > 0) {
+        if (foto.size > 10 * 1024 * 1024) return { error: 'Foto demasiado grande (máx 10 MB).' };
+        try {
+          const up = await uploadFile('pruebas', foto, { subidoPorAuthId: user.id, pathPrefix: `acusos/${caja_id}/recibo` });
+          foto_media_id = up.mediaId;
+        } catch (e) {
+          console.error('[cambiarEstado] upload foto recibo:', (e as Error).message);
+        }
+      }
+
+      await admin.from('caja_acusos').insert({
+        caja_id, tipo: 'recibo',
+        foto_media_id, firmado_por_personal_id: personal_id,
+        firmado_por_auth_id: user.id, notas: acuso_nota
+      });
+    }
+
     revalidatePath(`/dashboard/centro/cajas/${caja_id}`);
     revalidatePath('/dashboard/centro/cajas');
     return { ok: true };
@@ -103,11 +128,36 @@ export async function distribuirConReceptor(_prev: CentroCajaState, formData: Fo
       return { error: `Solo se puede marcar distribuida desde "en_via" (estado actual: ${caja.estado}).` };
     }
 
+    const foto = formData.get('foto') as File | null;
+    const personal_id = String(formData.get('personal_id') ?? '') || null;
+    const notas = String(formData.get('notas') ?? '').trim() || null;
+
+    let foto_media_id: string | null = null;
+    if (foto && typeof foto === 'object' && foto.size > 0) {
+      if (foto.size > 10 * 1024 * 1024) return { error: 'Foto demasiado grande (máx 10 MB).' };
+      try {
+        const up = await uploadFile('pruebas', foto, { subidoPorAuthId: user.id, pathPrefix: `acusos/${caja_id}/entrega` });
+        foto_media_id = up.mediaId;
+      } catch (e) {
+        console.error('[distribuirConReceptor] upload foto:', (e as Error).message);
+      }
+    }
+
     const { error } = await admin
       .from('cajas')
-      .update({ estado: 'distribuida', receptor_descripcion: receptor })
+      .update({
+        estado: 'distribuida',
+        receptor_descripcion: receptor,
+        receptor_evidencia_media_id: foto_media_id ?? undefined
+      })
       .eq('id', caja_id);
     if (error) return { error: error.message };
+
+    await admin.from('caja_acusos').insert({
+      caja_id, tipo: 'entrega',
+      foto_media_id, firmado_por_personal_id: personal_id,
+      firmado_por_auth_id: user.id, notas
+    });
 
     revalidatePath(`/dashboard/centro/cajas/${caja_id}`);
     revalidatePath('/dashboard/centro/cajas');
