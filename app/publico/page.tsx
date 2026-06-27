@@ -147,13 +147,18 @@ export default async function PublicoPage() {
               {influencers.length === 0 ? (
                 <p className="p-6 text-sm text-muted-foreground">No hay influencers registrados todavía.</p>
               ) : influencers.map((i) => {
-                const pct = i.recibido ? Math.round((i.rendido / i.recibido) * 100) : 0;
+                const pct = i.recibido ? Math.round((i.entregado / i.recibido) * 100) : 0;
+                const nombreEl = i.slug ? (
+                  <Link href={`/i/${i.slug}`} className="font-medium hover:underline">{i.nombre}</Link>
+                ) : (
+                  <p className="font-medium">{i.nombre}</p>
+                );
                 return (
                   <div key={i.id} className="p-4">
                     <div className="flex items-center justify-between">
-                      <p className="font-medium">{i.nombre}</p>
+                      {nombreEl}
                       <p className="font-mono text-sm tabular-nums">
-                        {formatUsd(i.rendido)} / {formatUsd(i.recibido)}
+                        {formatUsd(i.entregado)} / {formatUsd(i.recibido)}
                       </p>
                     </div>
                     <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">
@@ -163,8 +168,8 @@ export default async function PublicoPage() {
                       {i.recibido === 0
                         ? 'Sin donaciones todavía'
                         : pct === 100
-                          ? 'Rendición completa'
-                          : `${pct}% rendido · ${formatUsd(i.pendiente)} pendiente`}
+                          ? 'Entrega verificada al 100%'
+                          : `${pct}% entregado (con factura) · ${formatUsd(i.pendiente_verif)} pendiente de verificar`}
                     </p>
                   </div>
                 );
