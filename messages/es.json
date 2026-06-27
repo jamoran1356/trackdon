@@ -121,9 +121,9 @@
   },
   "donar": {
     "hub_title": "¿Qué querés trackear?",
-    "hub_subtitle": "trackdon no custodia fondos — somos el libro público. Vos donás directo (Zelle, depósito, entrega al centro) y acá registrás a quién entregaste para que quede trazable. Después le pedimos a esa organización que rinda en qué se invirtió.",
-    "hub_invite_title": "¿La organización a la que donaste no está en trackdon?",
-    "hub_invite_body": "Después de registrar tu donación te damos un link para enviarle a la organización. Cuando se registre, va a poder publicar la rendición de gastos asociada a lo que recibió, y vos vas a ver el cierre del rastro.",
+    "hub_subtitle": "trackdon no custodia fondos — somos el libro público. Tú donas directo (Zelle, depósito, entrega al centro) y aquí registras a quién le entregaste para que quede trazable. Después le pedimos a esa organización que rinda en qué se invirtió.",
+    "hub_invite_title": "¿La organización a la que le donaste no está en trackdon?",
+    "hub_invite_body": "Después de registrar tu donación te damos un link para enviarle a la organización. Cuando se registre, va a poder publicar la rendición de gastos asociada a lo que recibió, y vas a ver el cierre del rastro.",
     "hub_invite_cta": "Cómo funciona la invitación",
     "hub_bienes_title": "Bienes físicos",
     "hub_bienes_desc": "Ropa, comida, medicinas, agua, higiene. Lo entregas en un centro y aquí lo registramos con su rastro.",
