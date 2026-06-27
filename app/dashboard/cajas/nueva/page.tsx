@@ -21,7 +21,7 @@ export default async function NuevaCajaPage() {
     <div className="max-w-2xl">
       <h1 className="mb-2 text-2xl font-bold tracking-tight md:text-3xl">Nueva caja</h1>
       <p className="mb-6 text-sm text-muted-foreground">
-        Empezás con un borrador. Después le agregás items adentro y al final la sellás y la asignás a un centro.
+        Empiezas con un borrador. Después le agregas items adentro y al final la sellas y la asignas a un centro.
       </p>
       <NuevaCajaForm eventos={(eventos ?? []) as { id: string; nombre: string; slug: string }[]} />
     </div>
