@@ -1,12 +1,11 @@
 /**
- * Envío de emails vía Resend HTTP API (no SMTP).
- *
- * Requiere RESEND_API_KEY en env. Dominio `trackdonations.xyz` verificado
- * en Resend.
+ * Envío de emails. Prefiere SMTP configurado en admin (smtp_config) si está
+ * "enabled"; cae a Resend HTTP API si no.
  */
 
-const FROM = process.env.RESEND_FROM ?? 'trackdon <noreply@trackdonations.xyz>';
-const RESEND_API = 'https://api.resend.com/emails';
+import nodemailer from 'nodemailer';
+import { createSupabaseAdmin } from '@/lib/supabase/server';
+import { decrypt } from '@/lib/crypto';
 
 export interface SendResult {
   ok: boolean;
@@ -20,31 +19,70 @@ export async function sendEmail(
   html: string,
   text?: string
 ): Promise<SendResult> {
-  const key = process.env.RESEND_API_KEY;
-  if (!key) return { ok: false, error: 'RESEND_API_KEY no configurada' };
-
-  try {
-    const res = await fetch(RESEND_API, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${key}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        from: FROM,
+  // 1) Intentar SMTP de admin
+  const smtp = await loadSmtp();
+  if (smtp) {
+    try {
+      const transporter = nodemailer.createTransport({
+        host: smtp.host,
+        port: smtp.port,
+        secure: smtp.secure,
+        auth: { user: smtp.username, pass: smtp.password }
+      });
+      const info = await transporter.sendMail({
+        from: `${smtp.from_name} <${smtp.from_email}>`,
         to,
         subject,
         html,
         text
-      })
+      });
+      return { ok: true, id: info.messageId };
+    } catch (e) {
+      console.error('[email.smtp] fallo, intentando Resend:', (e as Error).message);
+      // fallthrough a Resend
+    }
+  }
+
+  // 2) Fallback Resend HTTP
+  const key = process.env.RESEND_API_KEY;
+  if (!key) return { ok: false, error: 'No hay proveedor de email configurado' };
+
+  const FROM = process.env.RESEND_FROM ?? 'trackdon <noreply@trackdonations.xyz>';
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ from: FROM, to, subject, html, text })
     });
     const body = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      return { ok: false, error: body?.message ?? `HTTP ${res.status}` };
-    }
+    if (!res.ok) return { ok: false, error: body?.message ?? `HTTP ${res.status}` };
     return { ok: true, id: body?.id };
   } catch (e) {
     return { ok: false, error: (e as Error).message };
+  }
+}
+
+async function loadSmtp() {
+  try {
+    const admin = createSupabaseAdmin();
+    const { data } = await admin
+      .from('smtp_config')
+      .select('host, port, username, password, from_email, from_name, secure, enabled')
+      .eq('id', 1)
+      .maybeSingle();
+    if (!data || !data.enabled) return null;
+    return {
+      host: data.host,
+      port: data.port,
+      secure: data.secure,
+      username: data.username,
+      password: decrypt(data.password),
+      from_email: data.from_email,
+      from_name: data.from_name
+    };
+  } catch (e) {
+    console.error('[email.loadSmtp]', (e as Error).message);
+    return null;
   }
 }
 

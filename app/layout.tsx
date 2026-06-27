@@ -1,7 +1,15 @@
 import type { Metadata, Viewport } from 'next';
+import { Poppins } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 import './globals.css';
+
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-sans',
+  display: 'swap'
+});
 
 export const metadata: Metadata = {
   title: {
@@ -36,7 +44,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const messages = await getMessages();
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning className={poppins.variable}>
       <head>
         <script
           dangerouslySetInnerHTML={{

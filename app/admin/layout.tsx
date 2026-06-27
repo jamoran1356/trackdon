@@ -18,6 +18,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <Badge variant="default">Admin</Badge>
           <nav className="flex gap-3 text-sm text-muted-foreground">
             <Link href="/admin/eventos" className="hover:text-foreground">Eventos</Link>
+            <Link href="/admin/smtp" className="hover:text-foreground">SMTP</Link>
           </nav>
         </div>
         {children}
