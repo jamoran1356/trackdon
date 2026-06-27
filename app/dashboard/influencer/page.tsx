@@ -1,3 +1,5 @@
+import { redirect } from 'next/navigation';
+import { getSessionUser } from '@/lib/auth';
 import { Stat } from '@/components/ui/stat';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +10,8 @@ import { Megaphone, Wallet, ShieldCheck, Plus, ReceiptText } from 'lucide-react'
 
 export const metadata = { title: 'Influencer' };
 
+const ALLOWED = new Set(['influencer', 'super_admin']);
+
 const destinoLabel: Record<string, string> = {
   compra_insumos: 'Compra de insumos',
   transferencia_centro: 'Transferencia a centro',
@@ -15,7 +19,11 @@ const destinoLabel: Record<string, string> = {
   otro: 'Otro'
 };
 
-export default function InfluencerDashboardPage() {
+export default async function InfluencerDashboardPage() {
+  const user = await getSessionUser();
+  if (!user) redirect('/login');
+  if (!ALLOWED.has(user.rol)) redirect('/dashboard');
+
   const recibido = 23_820;
   const rendido = mockInfluencerRendiciones
     .filter((r) => r.estado === 'verificado')

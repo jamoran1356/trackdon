@@ -1,3 +1,5 @@
+import { redirect } from 'next/navigation';
+import { getSessionUser } from '@/lib/auth';
 import { Stat } from '@/components/ui/stat';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -8,7 +10,13 @@ import { Box, ArrowDownToLine, ArrowUpFromLine, Plus, Package } from 'lucide-rea
 
 export const metadata = { title: 'Centro de acopio' };
 
-export default function CentroDashboardPage() {
+const ALLOWED = new Set(['centro_admin', 'centro_responsable', 'super_admin']);
+
+export default async function CentroDashboardPage() {
+  const user = await getSessionUser();
+  if (!user) redirect('/login');
+  if (!ALLOWED.has(user.rol)) redirect('/dashboard');
+
   const totalItems = mockCentroInventario.reduce((s, x) => s + x.total, 0);
   const ingresados = mockCentroInventario.reduce((s, x) => s + x.ingresados, 0);
   const salidos = mockCentroInventario.reduce((s, x) => s + x.salidos, 0);
