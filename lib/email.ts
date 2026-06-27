@@ -19,15 +19,21 @@ export async function sendEmail(
   html: string,
   text?: string
 ): Promise<SendResult> {
+  console.log('[email] sendEmail start', { to, subject });
+
   // 1) Intentar SMTP de admin
   const smtp = await loadSmtp();
+  console.log('[email] loadSmtp result:', smtp ? `host=${smtp.host} port=${smtp.port} from=${smtp.from_email}` : 'null');
   if (smtp) {
     try {
       const transporter = nodemailer.createTransport({
         host: smtp.host,
         port: smtp.port,
         secure: smtp.secure,
-        auth: { user: smtp.username, pass: smtp.password }
+        auth: { user: smtp.username, pass: smtp.password },
+        connectionTimeout: 15_000,
+        greetingTimeout: 10_000,
+        socketTimeout: 20_000
       });
       const info = await transporter.sendMail({
         from: `${smtp.from_name} <${smtp.from_email}>`,
@@ -36,9 +42,14 @@ export async function sendEmail(
         html,
         text
       });
+      console.log('[email] smtp sent', info.messageId);
       return { ok: true, id: info.messageId };
     } catch (e) {
-      console.error('[email.smtp] fallo, intentando Resend:', (e as Error).message);
+      console.error('[email.smtp] FALLO completo:', {
+        name: (e as Error).name,
+        message: (e as Error).message,
+        stack: (e as Error).stack?.split('\n').slice(0, 5).join(' | ')
+      });
       // fallthrough a Resend
     }
   }

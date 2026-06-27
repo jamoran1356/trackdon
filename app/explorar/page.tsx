@@ -4,7 +4,8 @@ import { SiteFooter } from '@/components/site/footer';
 import { createSupabaseAdmin } from '@/lib/supabase/server';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Warehouse, Megaphone, User, Search } from 'lucide-react';
+import { Warehouse, Megaphone, User, Search, Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export const metadata = { title: 'Explorador trackdon' };
 export const dynamic = 'force-dynamic';
@@ -91,6 +92,20 @@ export default async function ExplorarPage({
             />
           </div>
         </form>
+
+        {/* CTA para registrarse como centro o influencer */}
+        {tipo === 'centros' && (
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-md border border-primary/30 bg-primary/5 px-4 py-3">
+            <p className="text-sm">¿Tu organización recibe donaciones?</p>
+            <Button asChild size="sm"><Link href="/registro-centro"><Plus className="h-4 w-4" /> Registrar tu centro</Link></Button>
+          </div>
+        )}
+        {tipo === 'influencers' && (
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-md border border-primary/30 bg-primary/5 px-4 py-3">
+            <p className="text-sm">¿Recolectas donaciones como influencer/fundación?</p>
+            <Button asChild size="sm"><Link href="/influencers/nuevo"><Plus className="h-4 w-4" /> Crear mi perfil</Link></Button>
+          </div>
+        )}
 
         {/* Resultados */}
         <div className="mt-6 grid gap-3">

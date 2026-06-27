@@ -22,10 +22,10 @@ export async function SiteHeader() {
           <Link href="/donar" className="px-3 py-1.5 rounded-md hover:bg-accent hover:text-accent-foreground">
             {t('nav_donar')}
           </Link>
-          <Link href="/dashboard/centro" className="px-3 py-1.5 rounded-md hover:bg-accent hover:text-accent-foreground">
+          <Link href="/explorar?tipo=centros" className="px-3 py-1.5 rounded-md hover:bg-accent hover:text-accent-foreground">
             {t('nav_centros')}
           </Link>
-          <Link href="/dashboard/influencer" className="px-3 py-1.5 rounded-md hover:bg-accent hover:text-accent-foreground">
+          <Link href="/explorar?tipo=influencers" className="px-3 py-1.5 rounded-md hover:bg-accent hover:text-accent-foreground">
             {t('nav_influencers')}
           </Link>
         </nav>

@@ -42,7 +42,7 @@ export function CuentaForms({ email, username, nombreReal, kycVerifiedAt }: Cuen
               <Label htmlFor="username">Nuevo username</Label>
               <Input
                 id="username" name="username" defaultValue={username}
-                minLength={3} maxLength={20} pattern="[a-z0-9_-]{3,20}"
+                minLength={3} maxLength={20} pattern="[a-z0-9_\-]{3,20}"
                 placeholder="ej. maria_r"
               />
               <p className="text-xs text-muted-foreground">3-20 chars: a-z, 0-9, guion, guion bajo.</p>
