@@ -13,7 +13,7 @@ export function PatrocinadorForm() {
   const [state, action, busy] = useActionState(addPatrocinador, null);
 
   return (
-    <form action={action} className="grid gap-4 md:grid-cols-2">
+    <form action={action} className="grid gap-4 md:grid-cols-2" encType="multipart/form-data">
       <div className="space-y-2">
         <Label htmlFor="empresa">Empresa</Label>
         <Input id="empresa" name="empresa" placeholder="ACME Corp" required />
@@ -23,8 +23,14 @@ export function PatrocinadorForm() {
         <Input id="orden" name="orden" type="number" defaultValue={0} />
       </div>
       <div className="space-y-2 md:col-span-2">
-        <Label htmlFor="logo_url">Logo URL</Label>
-        <Input id="logo_url" name="logo_url" type="url" placeholder="https://...png" required />
+        <Label htmlFor="logo_file">Logo (subir archivo)</Label>
+        <Input id="logo_file" name="logo_file" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" />
+        <p className="text-xs text-muted-foreground">PNG, JPG, WebP o SVG. Máximo 5 MB.</p>
+      </div>
+      <div className="space-y-2 md:col-span-2">
+        <Label htmlFor="logo_url">o Logo URL externa (opcional)</Label>
+        <Input id="logo_url" name="logo_url" type="url" placeholder="https://...png" />
+        <p className="text-xs text-muted-foreground">Solo si prefieres apuntar a una imagen ya alojada.</p>
       </div>
       <div className="space-y-2 md:col-span-2">
         <Label htmlFor="url">URL del patrocinador (opcional)</Label>
