@@ -12,7 +12,7 @@ async function requireSuperAdmin() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('No autenticado');
   const { data: profile } = await supabase
-    .from('profiles')
+    .from('perfiles')
     .select('rol')
     .eq('id', user.id)
     .single();
