@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { SiteHeader } from '@/components/site/header';
 import { SiteFooter } from '@/components/site/footer';
+import { PreviewSection } from '@/components/landing/preview-section';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -157,6 +158,9 @@ export default function HomePage() {
             </ol>
           </div>
         </section>
+
+        {/* PREVIEW DE LA APP */}
+        <PreviewSection />
 
         {/* ACTORES */}
         <section className="border-t border-border/40">
