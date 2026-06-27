@@ -25,7 +25,7 @@ export async function sendEmail(
   console.log('[email] loadSmtp result:', smtp ? `host=${smtp.host} port=${smtp.port} from=${smtp.from_email}` : 'null');
 
   if (!smtp) {
-    return { ok: false, error: 'SMTP no configurado o desactivado. Activálo en /admin/smtp.' };
+    return { ok: false, error: 'SMTP no configurado o desactivado. Actívalo en /admin/smtp.' };
   }
 
   try {

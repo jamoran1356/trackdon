@@ -52,7 +52,7 @@ export default async function MisCajasPage() {
 
       {rows.length === 0 ? (
         <Card><CardContent className="p-8 text-center text-sm text-muted-foreground">
-          Aún no creaste cajas. Empezá con la primera.
+          Aún no creaste cajas. Empieza con la primera.
         </CardContent></Card>
       ) : (
         <div className="grid gap-3">

@@ -31,7 +31,7 @@ export default function TerminosPage() {
 
           <h2 className="mt-6 text-xl font-semibold">3. Cuenta y responsabilidad</h2>
           <ul className="list-disc pl-6 space-y-1">
-            <li>Tenés que ser mayor de 18 años.</li>
+            <li>Tienes que ser mayor de 18 años.</li>
             <li>La información que cargás es bajo tu responsabilidad. No subas datos falsos, suplantes a otras personas u organizaciones, ni cargues comprobantes adulterados.</li>
             <li>Tu username es público. No puedes usar nombres que contengan groserías, suplantación de roles (admin, soporte), discursos de odio o referencias sexuales. Los intentos de cambiar el username a algo prohibido derivan en suspensión automática de la cuenta.</li>
             <li>El password es responsabilidad tuya. No la compartas.</li>

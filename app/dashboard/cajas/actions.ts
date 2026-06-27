@@ -144,7 +144,7 @@ export async function sellarCaja(_prev: ActionState, formData: FormData): Promis
       .maybeSingle();
     if (!caja || caja.donante_auth_id !== user.id) return { error: 'No autorizado.' };
     if (caja.estado !== 'borrador') return { error: 'Ya está sellada.' };
-    if (!caja.centro_destino_id) return { error: 'Tenés que asignar un centro antes de sellar.' };
+    if (!caja.centro_destino_id) return { error: 'Tienes que asignar un centro antes de sellar.' };
 
     const { count } = await admin
       .from('caja_items')

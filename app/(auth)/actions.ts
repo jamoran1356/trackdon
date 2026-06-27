@@ -78,7 +78,7 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
     .insert({ email, nombre, username, code_hash, password_enc, expires_at });
   if (insertErr) {
     if (/Rate limit/i.test(insertErr.message)) {
-      return { error: 'Demasiados códigos en las últimas 24 h. Esperá un rato.' };
+      return { error: 'Demasiados códigos en las últimas 24 h. Espera un rato.' };
     }
     console.error('[signUp] otp insert:', insertErr.message);
     return { error: 'No pude generar el código. Intenta de nuevo.' };
@@ -128,14 +128,14 @@ export async function verifyEmailOtp(_prev: OtpState, formData: FormData): Promi
     .limit(1);
 
   const row = rows?.[0];
-  if (!row) return { error: 'No hay código activo para ese correo. Pedí uno nuevo.' };
+  if (!row) return { error: 'No hay código activo para ese correo. Pide uno nuevo.' };
 
   if (new Date(row.expires_at).getTime() < Date.now()) {
-    return { error: 'El código expiró. Pedí uno nuevo.' };
+    return { error: 'El código expiró. Pide uno nuevo.' };
   }
   if (row.attempts >= MAX_ATTEMPTS) {
     await admin.from('otp_codes').update({ consumed_at: new Date().toISOString() }).eq('id', row.id);
-    return { error: 'Demasiados intentos. Pedí un código nuevo.' };
+    return { error: 'Demasiados intentos. Pide un código nuevo.' };
   }
   if (row.code_hash !== code_hash) {
     await admin.from('otp_codes').update({ attempts: row.attempts + 1 }).eq('id', row.id);
@@ -150,7 +150,7 @@ export async function verifyEmailOtp(_prev: OtpState, formData: FormData): Promi
   try {
     password = decrypt(row.password_enc);
   } catch {
-    return { error: 'No pude desencriptar las credenciales. Pedí un código nuevo.' };
+    return { error: 'No pude desencriptar las credenciales. Pide un código nuevo.' };
   }
 
   await admin.from('otp_codes').update({ consumed_at: new Date().toISOString() }).eq('id', row.id);
@@ -198,7 +198,7 @@ export async function resendEmailOtp(_prev: OtpState, formData: FormData): Promi
     .order('creado_at', { ascending: false })
     .limit(1);
   const prev = last?.[0];
-  if (!prev) return { error: 'No hay registro previo. Iniciá desde /registro.' };
+  if (!prev) return { error: 'No hay registro previo. Inicia desde /registro.' };
 
   const nombre = prev.nombre;
   const password_enc = prev.password_enc;
@@ -216,7 +216,7 @@ export async function resendEmailOtp(_prev: OtpState, formData: FormData): Promi
     .insert({ email, nombre, code_hash, password_enc, expires_at });
   if (insertErr) {
     if (/Rate limit/i.test(insertErr.message)) {
-      return { error: 'Demasiados códigos en 24 h. Esperá un rato.' };
+      return { error: 'Demasiados códigos en 24 h. Espera un rato.' };
     }
     return { error: insertErr.message };
   }

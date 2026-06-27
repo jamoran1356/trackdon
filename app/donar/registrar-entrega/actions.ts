@@ -12,7 +12,7 @@ export type InviteState = { error?: string; ok?: boolean } | null;
 
 export async function inviteOrganizacion(_prev: InviteState, formData: FormData): Promise<InviteState> {
   const user = await getSessionUser();
-  if (!user) return { error: 'Tenés que iniciar sesión para invitar.' };
+  if (!user) return { error: 'Tienes que iniciar sesión para invitar.' };
 
   const email = String(formData.get('email') ?? '').trim().toLowerCase();
   const eventoId = String(formData.get('evento_id') ?? '').trim() || null;
@@ -113,7 +113,7 @@ export async function crearEntrega(
     return { error: 'Describe qué donaste (mín 3 caracteres).' };
   }
   if (!isBienes && valor_estimado_usd <= 0) {
-    return { error: 'Indicá el monto transferido en USD.' };
+    return { error: 'Indica el monto transferido en USD.' };
   }
 
   const admin = createSupabaseAdmin();
@@ -128,12 +128,12 @@ export async function crearEntrega(
       const nombre = String(formData.get('centro_nuevo_nombre') ?? '').trim();
       const direccion = String(formData.get('centro_nuevo_direccion') ?? '').trim();
       if (!nombre || nombre.length < 3) return { error: 'El nombre del centro nuevo es obligatorio.' };
-      if (!direccion) return { error: 'Indicá la dirección o punto de concentración del centro.' };
+      if (!direccion) return { error: 'Indica la dirección o punto de concentración del centro.' };
 
       const { data: anyValidator } = await admin
         .from('validadores')
         .select('id').eq('activo', true).limit(1).single();
-      if (!anyValidator) return { error: 'Todavía no hay validadores. Pedile a un admin que cree uno.' };
+      if (!anyValidator) return { error: 'Todavía no hay validadores. Pídele a un admin que cree uno.' };
 
       const { data: nuevoCentro, error: ce } = await admin
         .from('centros_acopio')

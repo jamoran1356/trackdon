@@ -101,7 +101,7 @@ export default async function DashboardHome() {
           <h2 className="text-base font-semibold">¿Cómo funcionan las cajas?</h2>
           <ol className="mt-3 list-decimal space-y-1 pl-5 text-sm text-muted-foreground">
             <li><strong>Borrador:</strong> crea una caja y agrega los items adentro (curitas, gasas, ropa, etc).</li>
-            <li><strong>Asigna centro:</strong> elige el centro de acopio destino. Si no está en trackdon, invitalo.</li>
+            <li><strong>Asigna centro:</strong> elige el centro de acopio destino. Si no está en trackdon, invítalo.</li>
             <li><strong>Sella:</strong> queda inmutable y entra al libro público.</li>
             <li><strong>El centro</strong> recibe, registra estado (en camión → en vía → distribuida) y al final indica receptor.</li>
           </ol>

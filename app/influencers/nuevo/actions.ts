@@ -56,7 +56,7 @@ export async function crearInfluencer(
   const { data: existing } = await admin
     .from('influencers')
     .select('id').ilike('slug', slug).maybeSingle();
-  if (existing) return { error: 'Ese slug ya está tomado. Probá otro.' };
+  if (existing) return { error: 'Ese slug ya está tomado. Prueba otro.' };
 
   // Un solo influencer por user (regla de producto)
   const { data: prev } = await admin
@@ -69,7 +69,7 @@ export async function crearInfluencer(
     .from('validadores')
     .select('id').eq('activo', true).limit(1).maybeSingle();
   if (!validator) {
-    return { error: 'No hay validadores configurados. Pedile a un admin que cree uno.' };
+    return { error: 'No hay validadores configurados. Pídele a un admin que cree uno.' };
   }
 
   // Avatar (opcional)

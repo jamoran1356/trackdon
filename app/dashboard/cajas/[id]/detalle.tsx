@@ -59,7 +59,7 @@ export function CajaDetalle({ caja, items, centros }: Props) {
           <h2 className="mb-1 text-base font-semibold">Contenido ({items.length})</h2>
           <p className="mb-4 text-xs text-muted-foreground">
             {isBorrador
-              ? 'Listá uno por uno lo que va adentro. Cantidad + descripción + subcategoría si aplica.'
+              ? 'Lista uno por uno lo que va adentro. Cantidad + descripción + subcategoría si aplica.'
               : 'La caja ya está sellada. Lo de adentro es inmutable.'}
           </p>
 
@@ -132,7 +132,7 @@ export function CajaDetalle({ caja, items, centros }: Props) {
         <CardContent className="p-6">
           <h2 className="mb-1 text-base font-semibold">Centro destino</h2>
           <p className="mb-4 text-xs text-muted-foreground">
-            ¿A qué centro de acopio le entregás esta caja?
+            ¿A qué centro de acopio le entregas esta caja?
           </p>
 
           {isBorrador && centrosDelEvento.length > 0 && (
@@ -157,7 +157,7 @@ export function CajaDetalle({ caja, items, centros }: Props) {
           {isBorrador && centrosDelEvento.length === 0 && (
             <div className="space-y-3">
               <p className="rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm">
-                No hay centros activos para este evento. Invitá uno.
+                No hay centros activos para este evento. Invita uno.
               </p>
               <InviteOrganizacionForm eventoId={caja.evento_id} />
             </div>
