@@ -71,7 +71,8 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
     otpEmailText(code, nombre)
   );
   if (!sent.ok) {
-    return { error: `No pude enviar el correo: ${sent.error ?? 'desconocido'}` };
+    console.error('[signUp] email send failed:', sent.error);
+    return { error: 'No pude enviar el correo. Intenta de nuevo en un minuto.' };
   }
 
   revalidatePath('/', 'layout');
@@ -202,7 +203,10 @@ export async function resendEmailOtp(_prev: OtpState, formData: FormData): Promi
     otpEmailHtml(code, nombre),
     otpEmailText(code, nombre)
   );
-  if (!sent.ok) return { error: `No pude enviar: ${sent.error ?? 'desconocido'}` };
+  if (!sent.ok) {
+    console.error('[resendEmailOtp] email send failed:', sent.error);
+    return { error: 'No pude enviar el correo. Intenta de nuevo en un minuto.' };
+  }
 
   return { resent: true };
 }
