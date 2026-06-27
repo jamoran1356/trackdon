@@ -1,0 +1,42 @@
+# Dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# Build outputs
+/.next/
+/out/
+/build
+/dist
+
+# Local env
+.env
+.env*.local
+.env.production
+
+# Testing / coverage
+/coverage
+
+# Editor / OS
+.DS_Store
+*.pem
+.vscode/
+.idea/
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Solana / Anchor
+/target
+.anchor
+test-ledger
+
+# Secrets — never commit
+/keys/
+*.keypair.json
