@@ -1,55 +1,58 @@
 import Link from 'next/link';
-import { signOut } from '@/app/(auth)/actions';
 import { getSessionUser } from '@/lib/auth';
+import { signOut } from '@/app/(auth)/actions';
 import {
-  LayoutDashboard, UserCircle, PackageOpen, Megaphone, Warehouse, ShieldCheck,
-  Package, Boxes, Users, Truck, Link2, ExternalLink, LogOut
+  LayoutDashboard, Calendar, Warehouse, Megaphone, ShieldCheck,
+  AlertTriangle, Users, ScrollText, Mail, Palette, FileText, Handshake,
+  LogOut, Shield, ExternalLink
 } from 'lucide-react';
 
-type NavItem = { href: string; label: string; icon: React.ComponentType<{ className?: string }> };
-
-export async function UserSidebar() {
+export async function AdminSidebar() {
   const user = await getSessionUser();
   if (!user) return null;
 
-  const sections: { title?: string; items: NavItem[] }[] = [
+  const sections: { title?: string; items: { href: string; label: string; icon: React.ComponentType<{ className?: string }> }[] }[] = [
     {
+      items: [{ href: '/admin', label: 'Inicio', icon: LayoutDashboard }]
+    },
+    {
+      title: 'Operación',
       items: [
-        { href: '/dashboard', label: 'Inicio', icon: LayoutDashboard },
-        { href: '/cuenta', label: 'Mi cuenta', icon: UserCircle }
+        { href: '/admin/eventos', label: 'Eventos', icon: Calendar },
+        { href: '/admin/centros', label: 'Centros de acopio', icon: Warehouse },
+        { href: '/admin/influencers', label: 'Influencers', icon: Megaphone },
+        { href: '/admin/validaciones', label: 'Validaciones', icon: ShieldCheck },
+        { href: '/admin/denuncias', label: 'Denuncias', icon: AlertTriangle },
+        { href: '/admin/patrocinadores', label: 'Patrocinadores', icon: Handshake }
+      ]
+    },
+    {
+      title: 'Sistema',
+      items: [
+        { href: '/admin/usuarios', label: 'Usuarios y roles', icon: Users },
+        { href: '/admin/auditoria', label: 'Auditoría / log', icon: ScrollText }
+      ]
+    },
+    {
+      title: 'Configuración',
+      items: [
+        { href: '/admin/smtp', label: 'SMTP', icon: Mail },
+        { href: '/admin/branding', label: 'Branding', icon: Palette },
+        { href: '/admin/legales', label: 'Legales', icon: FileText }
       ]
     }
   ];
 
-  const operaItems: NavItem[] = [];
-  if (user.rol === 'donante') {
-    operaItems.push({ href: '/dashboard/cajas', label: 'Mis cajas', icon: Boxes });
-    operaItems.push({ href: '/donar', label: 'Registrar entrega', icon: PackageOpen });
-  }
-  if (user.rol === 'influencer') {
-    operaItems.push({ href: '/dashboard/influencer', label: 'Mi panel', icon: Megaphone });
-  }
-  if (user.rol === 'centro_admin' || user.rol === 'centro_responsable') {
-    operaItems.push({ href: '/dashboard/centro', label: 'Mi centro', icon: Warehouse });
-    operaItems.push({ href: '/dashboard/centro/cajas', label: 'Cajas recibidas', icon: Package });
-    operaItems.push({ href: '/dashboard/centro/personal', label: 'Personal', icon: Users });
-    operaItems.push({ href: '/dashboard/centro/vehiculos', label: 'Vehículos', icon: Truck });
-    operaItems.push({ href: '/dashboard/centro/asignaciones', label: 'Asignaciones', icon: Link2 });
-  }
-  if (user.rol === 'validador') {
-    operaItems.push({ href: '/dashboard/validador', label: 'Cola de validación', icon: ShieldCheck });
-  }
-  if (operaItems.length > 0) {
-    sections.push({ title: 'Operación', items: operaItems });
-  }
-
   return (
     <aside className="sticky top-0 h-dvh w-64 shrink-0 border-r border-border/60 bg-background flex flex-col">
       <div className="border-b border-border/60 px-5 py-4">
-        <Link href="/" className="flex items-center gap-2 font-semibold">
+        <Link href="/admin" className="flex items-center gap-2 font-semibold">
           <span className="grid h-7 w-7 place-items-center rounded-lg bg-primary text-primary-foreground text-sm">td</span>
           <span className="text-base">trackdon</span>
         </Link>
+        <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-destructive/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-destructive">
+          <Shield className="h-3 w-3" /> Admin
+        </span>
       </div>
 
       <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-4">
@@ -81,11 +84,17 @@ export async function UserSidebar() {
           <p className="truncate text-muted-foreground">{user.email}</p>
         </div>
         <Link
+          href="/admin/cuenta"
+          className="block border-t border-border/60 px-4 py-3 text-xs text-muted-foreground hover:bg-accent hover:text-foreground"
+        >
+          Mi cuenta
+        </Link>
+        <Link
           href="/"
           className="flex items-center gap-2 border-t border-border/60 px-4 py-3 text-xs text-muted-foreground hover:bg-accent hover:text-foreground"
         >
           <ExternalLink className="h-3 w-3" />
-          Sitio público
+          Ver sitio público
         </Link>
         <form action={signOut}>
           <button
