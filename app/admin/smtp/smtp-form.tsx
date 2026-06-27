@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
 
 interface Initial {
   host?: string;
@@ -50,14 +51,18 @@ export function SmtpForm({ initial }: { initial: Initial | null }) {
               <Label htmlFor="from_name">From nombre</Label>
               <Input id="from_name" name="from_name" defaultValue={initial?.from_name ?? 'trackdon'} />
             </div>
-            <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" name="secure" defaultChecked={initial?.secure ?? true} />
-              TLS/SSL (secure)
-            </label>
-            <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" name="enabled" defaultChecked={initial?.enabled ?? false} />
-              Activado (usar este SMTP)
-            </label>
+            <Switch
+              name="secure"
+              defaultChecked={initial?.secure ?? true}
+              label="TLS/SSL"
+              hint="Cifrar la conexión con el server"
+            />
+            <Switch
+              name="enabled"
+              defaultChecked={initial?.enabled ?? false}
+              label="Activado"
+              hint="Usar este SMTP para enviar correos"
+            />
             <div className="md:col-span-2 flex items-center gap-3">
               <Button type="submit" disabled={saving}>{saving ? 'Guardando…' : 'Guardar'}</Button>
               {saveState?.error && <p className="text-sm text-destructive">{saveState.error}</p>}
