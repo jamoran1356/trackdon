@@ -12,11 +12,25 @@ Migraciones de base de datos para trackdon.
 
 ## Aplicar
 
-Con la CLI de Supabase:
+**Opción A — Supabase Studio (manual).** Pegar el contenido de cada
+archivo en SQL Editor → Run, en orden (`0001` antes que `0002`).
+
+**Opción B — Script Python via Management API.** Requiere PAT
+(`Account → Access Tokens` en supabase.com):
 
 ```bash
-supabase db reset                # local
-supabase db push                  # contra el proyecto remoto
+# ~/.openclaw/secrets/trackdon-supabase.env (no commit, mode 600)
+SUPABASE_PROJECT_REF=<ref>
+SUPABASE_PAT=<sbp_...>
+
+python3 supabase/apply.py                # aplica todas las migraciones
+python3 supabase/apply.py supabase/migrations/0001_init.sql  # una sola
+```
+
+**Opción C — Supabase CLI.** Si tienes el `supabase` CLI instalado:
+
+```bash
+supabase db push   # contra el proyecto vinculado
 ```
 
 ## Reglas operativas
