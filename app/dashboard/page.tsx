@@ -14,9 +14,9 @@ export default async function DashboardDispatcher() {
     case 'influencer':
       redirect('/dashboard/influencer');
     case 'validador':
+      redirect('/dashboard/validador');
     case 'super_admin':
-      // For now, validators land on the public board until their UI exists.
-      redirect('/publico');
+      redirect('/dashboard/validador');
     case 'donante':
     default:
       redirect('/donar');

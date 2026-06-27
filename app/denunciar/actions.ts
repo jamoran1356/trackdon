@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation';
 import { createSupabaseAdmin } from '@/lib/supabase/server';
 import { uploadFile } from '@/lib/supabase/storage';
+import { getSessionUser } from '@/lib/auth';
 
 export type DenunciaState = { error?: string; ok?: boolean } | null;
 
@@ -21,6 +22,9 @@ export async function crearDenuncia(
   _prev: DenunciaState,
   formData: FormData
 ): Promise<DenunciaState> {
+  const user = await getSessionUser();
+  if (!user) redirect('/login?return_to=/denunciar');
+
   const tipo = String(formData.get('tipo') ?? '').trim();
   const descripcion = String(formData.get('descripcion') ?? '').trim();
   const reporter_nombre = String(formData.get('reporter_nombre') ?? '').trim() || null;
@@ -49,7 +53,10 @@ export async function crearDenuncia(
   const adjuntosMediaIds: string[] = [];
   for (const f of adjuntos) {
     try {
-      const r = await uploadFile('denuncias', f, { pathPrefix: 'incoming' });
+      const r = await uploadFile('denuncias', f, {
+        subidoPorAuthId: user.id,
+        pathPrefix: `incoming/${user.id}`
+      });
       adjuntosMediaIds.push(r.mediaId);
     } catch (e) {
       return { error: `Fallo subiendo adjunto: ${(e as Error).message}` };
@@ -61,6 +68,7 @@ export async function crearDenuncia(
     descripcion,
     reporter_nombre,
     reporter_email,
+    reporter_auth_id: user.id,
     adjuntos_media_ids: adjuntosMediaIds
   };
   if (tipo === 'contra_centro' && target) payload.target_centro_id = target;
@@ -69,7 +77,13 @@ export async function crearDenuncia(
 
   const admin = createSupabaseAdmin();
   const { error } = await admin.from('denuncias').insert(payload);
-  if (error) return { error: error.message };
+  if (error) {
+    // Rate limit trigger usa exception → mensaje user-friendly
+    if (/Rate limit/i.test(error.message)) {
+      return { error: 'Llegaste al límite de denuncias por hoy (5 / 24 h). Volvé mañana.' };
+    }
+    return { error: error.message };
+  }
 
   redirect('/denunciar/gracias');
 }

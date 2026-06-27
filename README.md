@@ -38,17 +38,11 @@ urgencia para quedarse con recursos ajenos.
 > Centralizar toda la ayuda en un solo registro, dar transparencia
 > hacia quien la maneja, proteger la dignidad de quien la recibe.
 
-## Fases
+## No custodiamos fondos
 
-**Fase 1 — MVP (en construcción, esta fase).** Toda la lógica vive en
-Supabase + Next.js. Sin smart contract todavía (queda pendiente para
-cuando haya recursos para deploy + auditoría). Se aprovecha al máximo
-las garantías de Postgres y RLS para que los datos no se filtren.
-
-**Fase 2 — On-chain.** Cada donación, custodia y entrega se ancla en
-Solana como evento público con hash de la evidencia off-chain. KYC del
-damnificado tercerizado (Civic Pass / Truora / Persona). El dashboard
-público pasa a verificar contra blockchain.
+trackdon es un **libro público de trazabilidad**, no un intermediario de
+pagos. La gente dona directamente al centro o al influencer; aquí queda
+el registro verificable de quién recibió qué y cómo terminó entregándose.
 
 ## Dashboards
 
@@ -93,22 +87,20 @@ Cada actor tiene su propio panel, con permisos estrictamente separados:
 2. **Código abierto, datos privados.** El repo es público (MIT). El padrón
    KYC, las fotos y las facturas viven en Supabase con RLS estricta y nunca
    se commitean al repo.
-3. **KYC tercerizado** (fase 2). No manejamos identidades reales
-   internamente.
-4. **Distribución equitativa.** La "bolsa común" se reparte entre el
-   padrón verificado siguiendo una regla declarada y auditable.
+3. **No custodia de fondos.** No recibimos ni distribuimos dinero. Solo
+   registramos lo que pasa.
+4. **Verificación obligatoria para entregado.** Una rendición no cuenta
+   como "entregado" hasta que un validador autorizado revisa su comprobante.
 
 ## Stack
 
 | Capa | Tecnología | Notas |
 |---|---|---|
-| Frontend / Dashboard | Next.js 16 (App Router, Turbopack) + Tailwind + shadcn/ui | Mobile-first. Deploy en Vercel. |
-| API | Next.js Route Handlers | Una sola codebase. |
-| DB | Supabase (Postgres + RLS) | Fuente de verdad mientras no hay chain. |
-| Storage | Supabase Storage | Fotos, recibos, actas. Hash almacenado para fase 2. |
-| Auth | Supabase Auth | Roles: `donante`, `centro_admin`, `centro_responsable`, `influencer`, `validador`, `super_admin`. |
-| KYC (fase 2) | Civic Pass / Truora / Persona | Interfaz abstracta `lib/kyc/provider.ts`. |
-| On-chain (fase 2) | Solana + Anchor | Eventos públicos con hash de evidencia. |
+| Frontend / Dashboard | Next.js 16 (App Router, Turbopack) + React 19 + Tailwind + shadcn/ui | Mobile-first. Deploy en Vercel. |
+| API | Next.js Route Handlers + Server Actions | Una sola codebase. |
+| DB | Supabase (Postgres + RLS) | Fuente de verdad. RLS deny-all + policies explícitas. |
+| Storage | Supabase Storage | Buckets `avatares`/`pruebas` públicos, `comprobantes`/`denuncias` privados con signed URLs. |
+| Auth | Supabase Auth (OTP 6 dígitos) | Roles: `donante`, `centro_admin`, `centro_responsable`, `influencer`, `validador`, `super_admin`. |
 
 ## Seguridad
 
