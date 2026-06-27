@@ -49,8 +49,8 @@ export default function DonarPage() {
                 Suben el comprobante y queda en el registro público.
               </p>
               <Button asChild variant="ghost" size="sm" className="mt-4 px-0 text-primary hover:bg-transparent hover:text-primary/80">
-                <Link href="/publico">
-                  Ver receptores activos <ArrowRight className="h-4 w-4" />
+                <Link href="/donar/registrar-entrega?tipo=transferencia">
+                  Registrar transferencia <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
             </CardContent>

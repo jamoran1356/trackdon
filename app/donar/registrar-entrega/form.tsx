@@ -6,13 +6,18 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 
+type Tipo = 'bienes' | 'transferencia';
+
 interface Evento { id: string; slug: string; nombre: string }
 interface Centro { id: string; nombre: string; tipo: string; evento_id: string | null; direccion: string | null }
+interface Influencer { id: string; nombre_publico: string; slug: string | null; evento_id: string | null }
 
 export function RegistrarEntregaForm({
+  tipo,
   eventos,
-  centros
-}: { eventos: Evento[]; centros: Centro[] }) {
+  centros,
+  influencers
+}: { tipo: Tipo; eventos: Evento[]; centros: Centro[]; influencers: Influencer[] }) {
   const [state, action, pending] = useActionState<EntregaState, FormData>(crearEntrega, null);
   const [eventoId, setEventoId] = useState(eventos[0]?.id ?? '');
   const [centroModo, setCentroModo] = useState<'existente' | 'nuevo'>('existente');
@@ -21,9 +26,17 @@ export function RegistrarEntregaForm({
     () => centros.filter((c) => c.evento_id === eventoId),
     [centros, eventoId]
   );
+  const influencersDelEvento = useMemo(
+    () => influencers.filter((i) => i.evento_id === eventoId),
+    [influencers, eventoId]
+  );
+
+  const tipoBackend = tipo === 'bienes' ? 'bienes' : 'dinero_fiat';
 
   return (
-    <form action={action} className="space-y-6">
+    <form action={action} className="space-y-6" encType="multipart/form-data">
+      <input type="hidden" name="tipo" value={tipoBackend} />
+
       {/* Paso 1: Evento */}
       <fieldset className="space-y-2">
         <div className="flex items-center gap-2">
@@ -50,84 +63,93 @@ export function RegistrarEntregaForm({
         )}
       </fieldset>
 
-      {/* Paso 2: Centro */}
-      <fieldset className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Badge variant="default">2</Badge>
-          <Label className="text-base font-semibold">¿En qué centro entregaste?</Label>
-        </div>
-        <div className="grid gap-2 sm:grid-cols-2">
-          <label className={`cursor-pointer rounded-lg border p-3 text-sm transition-colors ${centroModo === 'existente' ? 'border-primary bg-primary/5' : 'border-input hover:bg-accent'}`}>
-            <input
-              type="radio"
-              name="centro_modo"
-              value="existente"
-              checked={centroModo === 'existente'}
-              onChange={() => setCentroModo('existente')}
-              className="mr-2 accent-primary"
-            />
-            Está en la lista
-          </label>
-          <label className={`cursor-pointer rounded-lg border p-3 text-sm transition-colors ${centroModo === 'nuevo' ? 'border-primary bg-primary/5' : 'border-input hover:bg-accent'}`}>
-            <input
-              type="radio"
-              name="centro_modo"
-              value="nuevo"
-              checked={centroModo === 'nuevo'}
-              onChange={() => setCentroModo('nuevo')}
-              className="mr-2 accent-primary"
-            />
-            Quiero agregarlo
-          </label>
-        </div>
-
-        {centroModo === 'existente' ? (
-          centrosDelEvento.length === 0 ? (
-            <p className="rounded-md border border-muted-foreground/30 bg-muted/30 px-3 py-2 text-sm text-muted-foreground">
-              No hay centros activos para este evento. Cambia a "Quiero agregarlo".
+      {/* Paso 2: Receptor */}
+      {tipo === 'bienes' ? (
+        <fieldset className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Badge variant="default">2</Badge>
+            <Label className="text-base font-semibold">¿En qué centro entregaste?</Label>
+          </div>
+          <div className="grid gap-2 sm:grid-cols-2">
+            <label className={`cursor-pointer rounded-lg border p-3 text-sm transition-colors ${centroModo === 'existente' ? 'border-primary bg-primary/5' : 'border-input hover:bg-accent'}`}>
+              <input type="radio" name="centro_modo" value="existente" checked={centroModo === 'existente'} onChange={() => setCentroModo('existente')} className="mr-2 accent-primary" />
+              Está en la lista
+            </label>
+            <label className={`cursor-pointer rounded-lg border p-3 text-sm transition-colors ${centroModo === 'nuevo' ? 'border-primary bg-primary/5' : 'border-input hover:bg-accent'}`}>
+              <input type="radio" name="centro_modo" value="nuevo" checked={centroModo === 'nuevo'} onChange={() => setCentroModo('nuevo')} className="mr-2 accent-primary" />
+              Quiero agregarlo
+            </label>
+          </div>
+          {centroModo === 'existente' ? (
+            centrosDelEvento.length === 0 ? (
+              <p className="rounded-md border border-muted-foreground/30 bg-muted/30 px-3 py-2 text-sm text-muted-foreground">
+                No hay centros activos para este evento. Cambia a "Quiero agregarlo".
+              </p>
+            ) : (
+              <select
+                name="centro_id"
+                required
+                defaultValue=""
+                className="flex h-11 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <option value="" disabled>Elegí un centro…</option>
+                {centrosDelEvento.map((c) => (
+                  <option key={c.id} value={c.id}>{c.nombre}{c.direccion ? ` · ${c.direccion}` : ''}</option>
+                ))}
+              </select>
+            )
+          ) : (
+            <div className="space-y-3 rounded-lg border border-dashed border-border bg-muted/20 p-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="centro_nuevo_nombre">Nombre del centro</Label>
+                <Input id="centro_nuevo_nombre" name="centro_nuevo_nombre" placeholder="Centro Norte · Plaza X" />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="centro_nuevo_direccion">Dirección o punto de concentración</Label>
+                <Input id="centro_nuevo_direccion" name="centro_nuevo_direccion" placeholder="Calle, número, referencia" />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Un validador lo revisa después; tu donación queda ligada a este centro.
+              </p>
+            </div>
+          )}
+        </fieldset>
+      ) : (
+        <fieldset className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Badge variant="default">2</Badge>
+            <Label className="text-base font-semibold">¿A qué receptor enviaste?</Label>
+          </div>
+          {influencersDelEvento.length === 0 ? (
+            <p className="rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm">
+              No hay influencers / fundaciones activas para este evento todavía.
             </p>
           ) : (
             <select
-              name="centro_id"
+              name="influencer_id"
               required
               defaultValue=""
               className="flex h-11 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <option value="" disabled>Elegí un centro…</option>
-              {centrosDelEvento.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.nombre}{c.direccion ? ` · ${c.direccion}` : ''}
-                </option>
+              <option value="" disabled>Elegí un receptor…</option>
+              {influencersDelEvento.map((i) => (
+                <option key={i.id} value={i.id}>{i.nombre_publico}</option>
               ))}
             </select>
-          )
-        ) : (
-          <div className="space-y-3 rounded-lg border border-dashed border-border bg-muted/20 p-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="centro_nuevo_nombre">Nombre del centro</Label>
-              <Input id="centro_nuevo_nombre" name="centro_nuevo_nombre" placeholder="Centro Norte · Plaza X" />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="centro_nuevo_direccion">Dirección o punto de concentración</Label>
-              <Input id="centro_nuevo_direccion" name="centro_nuevo_direccion" placeholder="Calle, número, referencia" />
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Un validador lo revisa después; mientras tanto, tu donación queda
-              ligada a este centro.
-            </p>
-          </div>
-        )}
-      </fieldset>
+          )}
+        </fieldset>
+      )}
 
       {/* Paso 3: Donativo */}
       <fieldset className="space-y-3">
         <div className="flex items-center gap-2">
           <Badge variant="default">3</Badge>
-          <Label className="text-base font-semibold">¿Qué entregaste?</Label>
+          <Label className="text-base font-semibold">
+            {tipo === 'bienes' ? '¿Qué entregaste?' : '¿Cuánto y cómo?'}
+          </Label>
         </div>
-        <input type="hidden" name="tipo" value="bienes" />
         <div className="space-y-1.5">
-          <Label htmlFor="descripcion">Descripción</Label>
+          <Label htmlFor="descripcion">{tipo === 'bienes' ? 'Descripción' : 'Concepto / medio'}</Label>
           <textarea
             id="descripcion"
             name="descripcion"
@@ -135,22 +157,42 @@ export function RegistrarEntregaForm({
             minLength={3}
             maxLength={400}
             rows={3}
-            placeholder="Ej: 5 cajas de agua (1.5 L), 10 paquetes de pañales talla M, medicinas variadas"
+            placeholder={tipo === 'bienes'
+              ? 'Ej: 5 cajas de agua (1.5 L), 10 paquetes de pañales talla M'
+              : 'Ej: Transferencia Zelle desde Banesco · ref 8847'}
             className="flex w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="valor_estimado_usd">Valor estimado (USD, opcional)</Label>
+          <Label htmlFor="valor_estimado_usd">
+            {tipo === 'bienes' ? 'Valor estimado (USD, opcional)' : 'Monto transferido (USD)'}
+          </Label>
           <Input
             id="valor_estimado_usd"
             name="valor_estimado_usd"
             type="number"
             min="0"
             step="1"
+            required={tipo === 'transferencia'}
             placeholder="0"
           />
+          {tipo === 'bienes' && (
+            <p className="text-xs text-muted-foreground">Aproximación. Si no sabes, déjalo en cero.</p>
+          )}
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="comprobante">
+            Comprobante {tipo === 'bienes' ? '(opcional)' : '(foto o PDF, recomendado)'}
+          </Label>
+          <input
+            id="comprobante"
+            name="comprobante"
+            type="file"
+            accept="image/jpeg,image/png,image/webp,application/pdf"
+            className="block w-full text-sm file:mr-3 file:rounded-md file:border-0 file:bg-primary file:px-3 file:py-2 file:text-sm file:font-medium file:text-primary-foreground hover:file:bg-primary/90"
+          />
           <p className="text-xs text-muted-foreground">
-            Aproximación del valor. Si no sabes, déjalo en cero.
+            Privado — solo lo ve el receptor y los validadores autorizados.
           </p>
         </div>
       </fieldset>
@@ -162,7 +204,7 @@ export function RegistrarEntregaForm({
       )}
 
       <Button type="submit" className="w-full" disabled={pending || eventos.length === 0}>
-        {pending ? 'Registrando…' : 'Registrar entrega'}
+        {pending ? 'Registrando…' : (tipo === 'bienes' ? 'Registrar entrega' : 'Registrar transferencia')}
       </Button>
     </form>
   );
