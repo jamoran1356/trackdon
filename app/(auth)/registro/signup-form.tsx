@@ -22,6 +22,9 @@ export function SignupForm() {
         <Input id="password" name="password" type="password" required autoComplete="new-password" minLength={8} />
         <p className="text-xs text-muted-foreground">Mínimo 8 caracteres.</p>
       </div>
+      <p className="rounded-md border border-border/60 bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+        Te enviaremos un código de 6 dígitos por correo para verificar la cuenta.
+      </p>
       {state?.error && (
         <p className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
           {state.error}
