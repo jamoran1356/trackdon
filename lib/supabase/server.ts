@@ -26,15 +26,15 @@ export async function createSupabaseServer() {
  * where you have validated the caller. NEVER expose in a client component.
  */
 export function createSupabaseAdmin() {
-  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error('SUPABASE_SERVICE_ROLE_KEY missing — admin client unavailable');
+  if (!process.env.SUPABASE_SECRET_KEY) {
+    throw new Error('SUPABASE_SECRET_KEY missing — admin client unavailable');
   }
-  // Lazy import to keep service_role out of the client bundle.
+  // Lazy import to keep the secret out of the client bundle.
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { createClient } = require('@supabase/supabase-js');
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY,
+    process.env.SUPABASE_SECRET_KEY,
     { auth: { persistSession: false } }
   );
 }
