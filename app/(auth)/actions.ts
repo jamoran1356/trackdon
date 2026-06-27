@@ -184,10 +184,13 @@ export async function verifyEmailOtp(_prev: OtpState, formData: FormData): Promi
     const { data: list } = await admin.auth.admin.listUsers({ page: 1, perPage: 200 });
     const userRow = list?.users.find((u: { id: string; email?: string }) => u.email?.toLowerCase() === email);
     if (userRow) {
+      const { data: anyValidator } = await admin
+        .from('validadores').select('id').eq('activo', true).limit(1).maybeSingle();
       const { data: c } = await admin.from('centros_acopio').insert({
         nombre: centroData.nombre, tipo: centroData.tipo,
         direccion: centroData.direccion, email_contacto: centroData.email_contacto,
-        evento_id: centroData.evento_id, activo: true
+        evento_id: centroData.evento_id, activo: true,
+        validador_id: anyValidator?.id ?? null
       }).select('id').single();
       if (c) {
         const { data: r } = await admin.from('responsables')

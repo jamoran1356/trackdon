@@ -45,12 +45,18 @@ async function createCentroForUser(userId: string, centro: CentroData): Promise<
     .eq('usuario_auth_id', userId).limit(1).maybeSingle();
   if (existing) return { error: 'Ya estás vinculado como responsable de un centro.' };
 
+  // validador_id es NOT NULL; tomamos uno activo cualquiera
+  const { data: anyValidator } = await admin
+    .from('validadores').select('id').eq('activo', true).limit(1).maybeSingle();
+  if (!anyValidator) return { error: 'Aún no hay validadores configurados. Pide a un admin que cree uno.' };
+
   const { data: c, error: cErr } = await admin
     .from('centros_acopio')
     .insert({
       nombre: centro.nombre, tipo: centro.tipo,
       direccion: centro.direccion, email_contacto: centro.email_contacto,
       evento_id: centro.evento_id, activo: true,
+      validador_id: anyValidator.id,
       responsable_principal_id: null
     })
     .select('id').single();
