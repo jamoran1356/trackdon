@@ -30,11 +30,13 @@ export async function signIn(_prev: AuthState, formData: FormData): Promise<Auth
  * código se consume; ahí se crea el user en auth.users con ese password.
  */
 export async function signUp(_prev: AuthState, formData: FormData): Promise<AuthState> {
+  console.log('[signUp] start');
   const email = String(formData.get('email') ?? '').trim().toLowerCase();
   const username = String(formData.get('username') ?? '').trim().toLowerCase();
   const nombre = String(formData.get('nombre') ?? '').trim();
   const password = String(formData.get('password') ?? '');
   const password_confirm = String(formData.get('password_confirm') ?? '');
+  console.log('[signUp] parsed', { email, username, nombreLen: nombre.length });
 
   if (!email || !nombre || !password || !username) {
     return { error: 'Todos los campos son obligatorios.' };
@@ -82,15 +84,18 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
     return { error: 'No pude generar el código. Intenta de nuevo.' };
   }
 
+  console.log('[signUp] llamando sendEmail');
   const sent = await sendEmail(
     email,
     'trackdon · código de verificación',
     otpEmailHtml(code, nombre),
     otpEmailText(code, nombre)
   );
+  console.log('[signUp] sendEmail result:', JSON.stringify(sent));
   if (!sent.ok) {
     console.error('[signUp] email send failed:', sent.error);
-    return { error: 'No pude enviar el correo. Intenta de nuevo en un minuto.' };
+    // Temporal: exponer el error real para diagnosticar
+    return { error: `Error al enviar correo: ${sent.error ?? 'desconocido'}` };
   }
 
   revalidatePath('/', 'layout');
