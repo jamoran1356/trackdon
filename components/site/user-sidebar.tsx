@@ -3,7 +3,7 @@ import { signOut } from '@/app/(auth)/actions';
 import { getSessionUser } from '@/lib/auth';
 import {
   LayoutDashboard, UserCircle, PackageOpen, Megaphone, Warehouse, ShieldCheck,
-  ExternalLink, LogOut
+  Package, Boxes, ExternalLink, LogOut
 } from 'lucide-react';
 
 type NavItem = { href: string; label: string; icon: React.ComponentType<{ className?: string }> };
@@ -23,6 +23,7 @@ export async function UserSidebar() {
 
   const operaItems: NavItem[] = [];
   if (user.rol === 'donante') {
+    operaItems.push({ href: '/dashboard/cajas', label: 'Mis cajas', icon: Boxes });
     operaItems.push({ href: '/donar', label: 'Registrar entrega', icon: PackageOpen });
   }
   if (user.rol === 'influencer') {
@@ -30,6 +31,7 @@ export async function UserSidebar() {
   }
   if (user.rol === 'centro_admin' || user.rol === 'centro_responsable') {
     operaItems.push({ href: '/dashboard/centro', label: 'Mi centro', icon: Warehouse });
+    operaItems.push({ href: '/dashboard/centro/cajas', label: 'Cajas recibidas', icon: Package });
   }
   if (user.rol === 'validador') {
     operaItems.push({ href: '/dashboard/validador', label: 'Cola de validación', icon: ShieldCheck });
