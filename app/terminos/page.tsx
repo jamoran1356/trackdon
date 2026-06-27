@@ -33,7 +33,7 @@ export default function TerminosPage() {
           <ul className="list-disc pl-6 space-y-1">
             <li>Tenés que ser mayor de 18 años.</li>
             <li>La información que cargás es bajo tu responsabilidad. No subas datos falsos, suplantes a otras personas u organizaciones, ni cargues comprobantes adulterados.</li>
-            <li>Tu username es público. No podés usar nombres que contengan groserías, suplantación de roles (admin, soporte), discursos de odio o referencias sexuales. Los intentos de cambiar el username a algo prohibido derivan en suspensión automática de la cuenta.</li>
+            <li>Tu username es público. No puedes usar nombres que contengan groserías, suplantación de roles (admin, soporte), discursos de odio o referencias sexuales. Los intentos de cambiar el username a algo prohibido derivan en suspensión automática de la cuenta.</li>
             <li>El password es responsabilidad tuya. No la compartas.</li>
           </ul>
 
@@ -61,7 +61,7 @@ export default function TerminosPage() {
           <h2 className="mt-6 text-xl font-semibold">7. Propiedad intelectual</h2>
           <p>
             El código de trackdon es open source (MIT, en <a href="https://github.com/jamoran1356/trackdon" target="_blank" className="text-primary hover:underline">GitHub</a>).
-            El contenido que vos subís (textos, fotos de comprobantes) sigue siendo tuyo; nos otorgás una licencia
+            El contenido que tú subís (textos, fotos de comprobantes) sigue siendo tuyo; nos otorgás una licencia
             no exclusiva para mostrarlo en la plataforma con los permisos que tú definas (público o privado).
           </p>
 

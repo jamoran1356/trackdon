@@ -19,7 +19,7 @@ export function AsignarForm({ personas, vehiculos }: { personas: Persona[]; vehi
         <Label htmlFor="personal_id">Persona</Label>
         <select id="personal_id" name="personal_id" required
           className="flex h-11 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" defaultValue="">
-          <option value="" disabled>— Elegí —</option>
+          <option value="" disabled>— Elige —</option>
           {personas.map((p) => <option key={p.id} value={p.id}>{p.nombre}</option>)}
         </select>
       </div>
@@ -27,7 +27,7 @@ export function AsignarForm({ personas, vehiculos }: { personas: Persona[]; vehi
         <Label htmlFor="vehiculo_id">Vehículo</Label>
         <select id="vehiculo_id" name="vehiculo_id" required
           className="flex h-11 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" defaultValue="">
-          <option value="" disabled>— Elegí —</option>
+          <option value="" disabled>— Elige —</option>
           {vehiculos.map((v) => <option key={v.id} value={v.id}>{v.identificador}</option>)}
         </select>
       </div>

@@ -38,7 +38,7 @@ export default async function RegistroCentroPage() {
       <main className="container max-w-2xl py-8 md:py-14">
         <h1 className="text-3xl font-bold tracking-tight md:text-4xl">Registra tu centro de acopio</h1>
         <p className="mt-3 text-muted-foreground">
-          Si recibís donaciones humanitarias (en bienes o en cash), regístrate acá para que aparezcan en el libro
+          Si recibes donaciones humanitarias (en bienes o en cash), regístrate aquí para que aparezcan en el libro
           público y los donantes puedan ver el rastro completo de lo que entregan.
         </p>
 

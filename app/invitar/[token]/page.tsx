@@ -90,7 +90,7 @@ export default async function InvitarPage({ params }: { params: Promise<{ token:
               <p>
                 <strong>trackdon</strong> es el libro público de donaciones humanitarias.
                 No custodia fondos. Los donantes registran a quién entregaron;
-                vos registrás cómo se usó.
+                tú registras cómo se usó.
               </p>
             </div>
 
@@ -117,7 +117,7 @@ export default async function InvitarPage({ params }: { params: Promise<{ token:
                 ) : user && !sameEmail ? (
                   <div className="flex-1 rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm">
                     Estás logueado como <strong>{user.email}</strong>, pero esta invitación es para <strong>{inv.email}</strong>.
-                    Cerrá sesión y registrate con el email correcto.
+                    Cierra sesión y regístrate con el email correcto.
                   </div>
                 ) : (
                   <Button asChild className="flex-1">
@@ -132,7 +132,7 @@ export default async function InvitarPage({ params }: { params: Promise<{ token:
         </Card>
 
         <p className="mt-6 text-center text-xs text-muted-foreground">
-          ¿Por qué llegaste acá? <span className="font-mono">@{inviterUsername}</span> te donó y necesita
+          ¿Por qué llegaste aquí? <span className="font-mono">@{inviterUsername}</span> te donó y necesita
           que rindas en qué se invirtió, para cerrar el rastro público.
         </p>
       </main>

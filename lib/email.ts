@@ -135,8 +135,8 @@ export function invitationEmailHtml(d: InvitationEmailData): string {
 
   <p style="margin:0 0 16px;line-height:1.6;color:#4b5563;">
     <strong>trackdon</strong> es el libro público de donaciones humanitarias. Permite que cualquier persona vea
-    quién donó, qué centro o organización recibió, y cómo terminó usándose. Cero custodia de fondos — sos vos
-    quien sigue manejando lo recibido. Lo que pedimos es que registres acá la rendición de gastos, con sus
+    quién donó, qué centro o organización recibió, y cómo terminó usándose. Cero custodia de fondos — eres tú
+    quien sigue manejando lo recibido. Lo que pedimos es que registres aquí la rendición de gastos, con sus
     comprobantes, para cerrar el rastro.
   </p>
 
@@ -154,7 +154,7 @@ export function invitationEmailHtml(d: InvitationEmailData): string {
   </p>
 
   <p style="font-size:13px;color:#5f6368;line-height:1.5;margin:0 0 24px;">
-    El link expira en 30 días. Si no eras la organización destinataria de esta donación, podés ignorar este correo.
+    El link expira en 30 días. Si no eras la organización destinataria de esta donación, puedes ignorar este correo.
   </p>
 
   <hr style="border:none;border-top:1px solid #e8eaed;margin:24px 0;">
@@ -169,12 +169,12 @@ export function invitationEmailText(d: InvitationEmailData): string {
   const msg = d.mensajePersonal ? `\n\nMensaje de @${d.remitenteUsername}:\n${d.mensajePersonal}` : '';
   return `@${d.remitenteUsername} te donó algo y necesita que rindas en qué se invirtió.${evento}
 
-trackdon es el libro público de donaciones humanitarias. Permite que cualquier persona vea quién donó, qué organización recibió, y cómo terminó usándose. Cero custodia de fondos — sos vos quien sigue manejando lo recibido. Pedimos que registres acá la rendición de gastos para cerrar el rastro.${msg}
+trackdon es el libro público de donaciones humanitarias. Permite que cualquier persona vea quién donó, qué organización recibió, y cómo terminó usándose. Cero custodia de fondos — eres tú quien sigue manejando lo recibido. Pedimos que registres aquí la rendición de gastos para cerrar el rastro.${msg}
 
 Registrate y reclamá las donaciones:
 ${d.acceptUrl}
 
-El link expira en 30 días. Si no eras la organización destinataria, podés ignorar este correo.
+El link expira en 30 días. Si no eras la organización destinataria, puedes ignorar este correo.
 
 trackdon — trackdonations.xyz`;
 }

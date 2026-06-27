@@ -47,9 +47,9 @@ export default async function ExplorarPage({
       <main className="container py-8 md:py-12">
         <div>
           <p className="text-sm font-semibold uppercase tracking-wider text-primary">Explorador</p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">Buscá en el libro público</h1>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">Busca en el libro público</h1>
           <p className="mt-2 text-muted-foreground">
-            Cualquier donación, cualquier centro, cualquier persona — todo el rastro está acá.
+            Cualquier donación, cualquier centro, cualquier persona — todo el rastro está aquí.
           </p>
         </div>
 

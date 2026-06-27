@@ -14,7 +14,7 @@ async function getCentroOrFail(userId: string, centroIdFromForm?: string | null)
       .eq('centro_id', centroIdFromForm)
       .eq('usuario_auth_id', userId)
       .maybeSingle();
-    if (!data) throw new Error('No sos responsable de ese centro.');
+    if (!data) throw new Error('No eres responsable de ese centro.');
     return centroIdFromForm;
   }
   const { data } = await admin.from('responsables')
@@ -22,7 +22,7 @@ async function getCentroOrFail(userId: string, centroIdFromForm?: string | null)
     .eq('usuario_auth_id', userId)
     .limit(1)
     .maybeSingle();
-  if (!data) throw new Error('No tenés centro asignado.');
+  if (!data) throw new Error('No tienes centro asignado.');
   return data.centro_id;
 }
 

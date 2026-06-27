@@ -56,7 +56,7 @@ export function RegistroCentroForm({ eventos }: { eventos: Evento[] }) {
           </div>
 
           <div className="rounded-md border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-xs text-muted-foreground">
-            Al registrarte declarás que sos representante autorizado de la organización. Un validador podrá
+            Al registrarte declaras que eres representante autorizado de la organización. Un validador podrá
             pedirte documentación para auditar la operación. Si el centro resulta no existir o no estar autorizado,
             puede ser desactivado.
           </div>

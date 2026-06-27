@@ -93,7 +93,7 @@ export function RegistrarEntregaForm({
                 defaultValue=""
                 className="flex h-11 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <option value="" disabled>Elegí un centro…</option>
+                <option value="" disabled>Elige un centro…</option>
                 {centrosDelEvento.map((c) => (
                   <option key={c.id} value={c.id}>{c.nombre}{c.direccion ? ` · ${c.direccion}` : ''}</option>
                 ))}
@@ -130,7 +130,7 @@ export function RegistrarEntregaForm({
               defaultValue=""
               className="flex h-11 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <option value="" disabled>Elegí un receptor…</option>
+              <option value="" disabled>Elige un receptor…</option>
               {influencersDelEvento.map((i) => (
                 <option key={i.id} value={i.id}>{i.nombre_publico}</option>
               ))}

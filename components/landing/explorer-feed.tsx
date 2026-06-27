@@ -93,7 +93,7 @@ export function ExplorerFeed() {
             <CardContent className="p-10 text-center">
               <Clock className="mx-auto h-8 w-8 text-muted-foreground" />
               <p className="mt-3 text-sm text-muted-foreground">
-                Todavía no hay registros públicos. En cuanto se registren donaciones, centros o rendiciones aparecen acá en vivo.
+                Todavía no hay registros públicos. En cuanto se registren donaciones, centros o rendiciones aparecen aquí en vivo.
               </p>
             </CardContent>
           </Card>

@@ -111,8 +111,8 @@ export async function testSmtp(_prev: SmtpState, formData: FormData): Promise<Sm
       from: `${cfg.from_name} <${cfg.from_email}>`,
       to,
       subject: 'trackdon · test SMTP',
-      html: '<p>Si recibís esto, el SMTP configurado en /admin/smtp está funcionando.</p>',
-      text: 'Si recibís esto, el SMTP configurado en /admin/smtp está funcionando.'
+      html: '<p>Si recibes esto, el SMTP configurado en /admin/smtp está funcionando.</p>',
+      text: 'Si recibes esto, el SMTP configurado en /admin/smtp está funcionando.'
     });
     return { ok: true };
   } catch (e) {

@@ -46,7 +46,7 @@ export async function cambiarEstado(_prev: CentroCajaState, formData: FormData):
     if (!caja.centro_destino_id) return { error: 'Caja sin centro asignado.' };
 
     const isOwner = await verifyCentroOwner(caja.centro_destino_id, user.id);
-    if (!isOwner && user.rol !== 'super_admin') return { error: 'No sos responsable de este centro.' };
+    if (!isOwner && user.rol !== 'super_admin') return { error: 'No eres responsable de este centro.' };
 
     const allowed = TRANSICIONES[caja.estado] ?? [];
     if (!allowed.includes(estado_nuevo)) {
@@ -110,7 +110,7 @@ export async function distribuirConReceptor(_prev: CentroCajaState, formData: Fo
     const caja_id = String(formData.get('caja_id') ?? '');
     const receptor = String(formData.get('receptor_descripcion') ?? '').trim();
     if (!caja_id) return { error: 'Falta caja.' };
-    if (!receptor) return { error: 'Describí al receptor final.' };
+    if (!receptor) return { error: 'Describe al receptor final.' };
 
     const admin = createSupabaseAdmin();
     const { data: caja } = await admin
@@ -122,7 +122,7 @@ export async function distribuirConReceptor(_prev: CentroCajaState, formData: Fo
     if (!caja.centro_destino_id) return { error: 'Sin centro.' };
 
     const isOwner = await verifyCentroOwner(caja.centro_destino_id, user.id);
-    if (!isOwner && user.rol !== 'super_admin') return { error: 'No sos responsable de este centro.' };
+    if (!isOwner && user.rol !== 'super_admin') return { error: 'No eres responsable de este centro.' };
 
     if (caja.estado !== 'en_via') {
       return { error: `Solo se puede marcar distribuida desde "en_via" (estado actual: ${caja.estado}).` };

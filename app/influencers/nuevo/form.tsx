@@ -37,7 +37,7 @@ export function NuevoInfluencerForm({ eventos }: { eventos: Evento[] }) {
             defaultValue=""
             className="flex h-11 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <option value="" disabled>Elegí un evento…</option>
+            <option value="" disabled>Elige un evento…</option>
             {eventos.map((e) => <option key={e.id} value={e.id}>{e.nombre}</option>)}
           </select>
         )}

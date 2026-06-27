@@ -32,7 +32,7 @@ export default function PrivacidadPage() {
           <h2 className="mt-6 text-xl font-semibold">3. Cómo se usan los datos</h2>
           <ul className="list-disc pl-6 space-y-1">
             <li><strong>Username y donaciones:</strong> se exponen públicamente para mantener el rastro de cada donación.</li>
-            <li><strong>Nombre real:</strong> solo es visible para vos y, si pedís KYC, para el equipo de validación. Nunca aparece en URLs, listados públicos ni en el feed.</li>
+            <li><strong>Nombre real:</strong> solo es visible para tú y, si pedís KYC, para el equipo de validación. Nunca aparece en URLs, listados públicos ni en el feed.</li>
             <li><strong>Email:</strong> se usa exclusivamente para verificación de cuenta y notificaciones de la plataforma. No se vende, alquila ni comparte con terceros.</li>
             <li><strong>Comprobantes:</strong> los archivos privados (facturas, recibos, fotos KYC) viven en almacenamiento con permisos estrictos y solo los pueden ver el dueño y los validadores autorizados.</li>
           </ul>

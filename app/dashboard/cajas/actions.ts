@@ -60,7 +60,7 @@ export async function agregarItem(_prev: ActionState, formData: FormData): Promi
       .maybeSingle();
     if (!caja) return { error: 'Caja no encontrada.' };
     if (caja.donante_auth_id !== user.id) return { error: 'No es tu caja.' };
-    if (caja.estado !== 'borrador') return { error: 'La caja ya está sellada; no podés agregar items.' };
+    if (caja.estado !== 'borrador') return { error: 'La caja ya está sellada; no puedes agregar items.' };
 
     const { error } = await admin
       .from('caja_items')
@@ -150,7 +150,7 @@ export async function sellarCaja(_prev: ActionState, formData: FormData): Promis
       .from('caja_items')
       .select('id', { count: 'exact', head: true })
       .eq('caja_id', caja_id);
-    if (!count || count < 1) return { error: 'Agregá al menos 1 item antes de sellar.' };
+    if (!count || count < 1) return { error: 'Agrega al menos 1 item antes de sellar.' };
 
     const { error } = await admin.from('cajas').update({ estado: 'sellada' }).eq('id', caja_id);
     if (error) return { error: error.message };

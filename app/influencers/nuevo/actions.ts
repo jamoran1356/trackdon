@@ -62,7 +62,7 @@ export async function crearInfluencer(
   const { data: prev } = await admin
     .from('influencers')
     .select('id').eq('usuario_auth_id', user.id).maybeSingle();
-  if (prev) return { error: 'Ya tenés un perfil de influencer. Edítalo desde tu dashboard.' };
+  if (prev) return { error: 'Ya tienes un perfil de influencer. Edítalo desde tu dashboard.' };
 
   // Validador para vincular: primero activo
   const { data: validator } = await admin

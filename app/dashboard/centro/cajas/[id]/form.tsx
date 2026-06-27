@@ -52,7 +52,7 @@ export function CentroCajaForm({ cajaId, estado, receptor, personal }: {
         <CardContent className="p-6">
           <h2 className="mb-1 text-base font-semibold">Distribuir</h2>
           <p className="mb-4 text-xs text-muted-foreground">
-            Subí una foto del acuso de entrega y elegí quién firma. Receptor final queda en el registro público.
+            Sube una foto del acuso de entrega y elige quién firma. Receptor final queda en el registro público.
           </p>
           <form action={distAction} className="space-y-3" encType="multipart/form-data">
             <input type="hidden" name="caja_id" value={cajaId} />

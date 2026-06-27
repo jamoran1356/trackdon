@@ -46,7 +46,7 @@ export default async function CentroDashboardPage() {
             <Box className="mx-auto h-10 w-10 text-primary" />
             <p className="mt-4 font-medium">Pide a un admin que te asigne como responsable</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Solo los responsables registrados de un centro pueden verlo desde acá.
+              Solo los responsables registrados de un centro pueden verlo desde aquí.
               Si tu centro aún no existe, un admin puede crearlo y vincularte.
             </p>
           </CardContent>

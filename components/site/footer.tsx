@@ -15,7 +15,7 @@ export async function SiteFooter() {
           <Link href="/publico" className="hover:text-foreground">{tCommon('panel_publico')}</Link>
           <Link href="/denunciar" className="hover:text-foreground">{tCommon('denunciar')}</Link>
           <Link href="/sobre" className="hover:text-foreground">{tCommon('sobre')}</Link>
-          <Link href="/registro-centro" className="hover:text-foreground">Registrá tu centro</Link>
+          <Link href="/registro-centro" className="hover:text-foreground">Registra tu centro</Link>
           <Link href="/privacidad" className="hover:text-foreground">Privacidad</Link>
           <Link href="/terminos" className="hover:text-foreground">Términos</Link>
           <Link

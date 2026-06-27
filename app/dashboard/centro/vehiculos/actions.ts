@@ -20,7 +20,7 @@ export async function addVehiculo(_prev: Result, formData: FormData): Promise<Re
     const centro_id = String(formData.get('centro_id') ?? '');
     if (!centro_id) return { error: 'Falta centro.' };
     if (!(await ownsCentro(user.id, centro_id)) && user.rol !== 'super_admin') {
-      return { error: 'No sos responsable de ese centro.' };
+      return { error: 'No eres responsable de ese centro.' };
     }
 
     const identificador = String(formData.get('identificador') ?? '').trim();

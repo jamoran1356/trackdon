@@ -108,9 +108,9 @@ export async function crearEntrega(
   const valor_raw = String(formData.get('valor_estimado_usd') ?? '0').trim();
   const valor_estimado_usd = Math.max(0, Number(valor_raw) || 0);
 
-  if (!evento_id) return { error: 'Seleccioná un evento.' };
+  if (!evento_id) return { error: 'Selecciona un evento.' };
   if (!descripcion || descripcion.length < 3) {
-    return { error: 'Describí qué donaste (mín 3 caracteres).' };
+    return { error: 'Describe qué donaste (mín 3 caracteres).' };
   }
   if (!isBienes && valor_estimado_usd <= 0) {
     return { error: 'Indicá el monto transferido en USD.' };
@@ -147,11 +147,11 @@ export async function crearEntrega(
       centro_recibio_id = nuevoCentro.id;
     } else {
       centro_recibio_id = String(formData.get('centro_id') ?? '').trim() || null;
-      if (!centro_recibio_id) return { error: 'Seleccioná un centro o agregá uno nuevo.' };
+      if (!centro_recibio_id) return { error: 'Selecciona un centro o agrega uno nuevo.' };
     }
   } else {
     influencer_recibio_id = String(formData.get('influencer_id') ?? '').trim() || null;
-    if (!influencer_recibio_id) return { error: 'Seleccioná un receptor.' };
+    if (!influencer_recibio_id) return { error: 'Selecciona un receptor.' };
   }
 
   // Comprobante (opcional para bienes, recomendado para transferencia)

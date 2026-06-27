@@ -27,7 +27,7 @@ export async function changeUserRole(_prev: Result, formData: FormData): Promise
     const newRol = String(formData.get('rol') ?? '');
     if (!userId || !ROLES.includes(newRol)) return { error: 'Datos inválidos.' };
     if (userId === me && newRol !== 'super_admin') {
-      return { error: 'No podés bajarte el rol a ti mismo.' };
+      return { error: 'No puedes bajarte el rol a ti mismo.' };
     }
 
     const admin = createSupabaseAdmin();
@@ -48,7 +48,7 @@ export async function toggleBan(_prev: Result, formData: FormData): Promise<Resu
     const motivo = String(formData.get('motivo') ?? '').trim() || null;
     const action = String(formData.get('action') ?? '');
     if (!userId) return { error: 'Falta user_id.' };
-    if (userId === me) return { error: 'No podés banearte a vos mismo.' };
+    if (userId === me) return { error: 'No puedes banearte a tú mismo.' };
 
     const admin = createSupabaseAdmin();
     if (action === 'ban') {

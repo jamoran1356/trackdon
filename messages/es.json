@@ -120,7 +120,7 @@
     "verify_help": "¿No te llegó? Revisa spam o usa el botón Reenviar código."
   },
   "donar": {
-    "hub_title": "¿Qué querés trackear?",
+    "hub_title": "¿Qué quieres trackear?",
     "hub_subtitle": "trackdon no custodia fondos — somos el libro público. Tú donas directo (Zelle, depósito, entrega al centro) y aquí registras a quién le entregaste para que quede trazable. Después le pedimos a esa organización que rinda en qué se invirtió.",
     "hub_invite_title": "¿La organización a la que le donaste no está en trackdon?",
     "hub_invite_body": "Después de registrar tu donación te damos un link para enviarle a la organización. Cuando se registre, va a poder publicar la rendición de gastos asociada a lo que recibió, y vas a ver el cierre del rastro.",
@@ -149,8 +149,8 @@
     "wizard_step3_transfer": "¿Cuánto y cómo?",
     "wizard_centro_existente": "Está en la lista",
     "wizard_centro_nuevo": "Quiero agregarlo",
-    "wizard_pick_centro": "Elegí un centro…",
-    "wizard_pick_influencer": "Elegí un receptor…",
+    "wizard_pick_centro": "Elige un centro…",
+    "wizard_pick_influencer": "Elige un receptor…",
     "wizard_no_centros": "No hay centros activos para este evento. Cambia a Quiero agregarlo.",
     "wizard_no_influencers": "No hay influencers / fundaciones activas para este evento todavía.",
     "wizard_no_eventos": "No hay eventos activos todavía. Pide a un admin que cree uno.",
@@ -270,7 +270,7 @@
     "perfil_form_slug": "Slug (opcional)",
     "perfil_form_slug_help": "URL: /i/<slug>. Se genera del nombre si lo dejas vacío.",
     "perfil_form_evento": "Evento al que recolectas",
-    "perfil_form_evento_pick": "Elegí un evento…",
+    "perfil_form_evento_pick": "Elige un evento…",
     "perfil_form_evento_empty": "No hay eventos activos. Pide a un admin que cree uno antes de crear tu perfil.",
     "perfil_form_bio": "Bio (opcional)",
     "perfil_form_avatar": "Avatar (opcional, jpg/png/webp, <2 MB)",
@@ -285,7 +285,7 @@
   "dashboard": {
     "centro_badge": "Dashboard · centro de acopio",
     "centro_empty_title": "No estás vinculado a ningún centro",
-    "centro_empty_body": "Pide a un admin que te asigne como responsable. Solo los responsables registrados de un centro pueden verlo desde acá. Si tu centro aún no existe, un admin puede crearlo y vincularte.",
+    "centro_empty_body": "Pide a un admin que te asigne como responsable. Solo los responsables registrados de un centro pueden verlo desde aquí. Si tu centro aún no existe, un admin puede crearlo y vincularte.",
     "centro_sin_direccion": "Sin dirección",
     "centro_stat_donaciones": "Donaciones recibidas",
     "centro_stat_valor": "Valor estimado total",

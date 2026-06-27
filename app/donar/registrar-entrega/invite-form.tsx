@@ -31,7 +31,7 @@ export function InviteOrganizacionForm({ eventoId }: { eventoId: string | null }
       <div>
         <p className="text-sm font-medium">¿Querés invitar a esta organización a trackdon?</p>
         <p className="mt-1 text-xs text-muted-foreground">
-          Le mandamos un correo explicando el proyecto y un link único para que se registre. Después podés volver acá y registrar la transferencia.
+          Le mandamos un correo explicando el proyecto y un link único para que se registre. Después puedes volver aquí y registrar la transferencia.
         </p>
       </div>
       {eventoId && <input type="hidden" name="evento_id" value={eventoId} />}

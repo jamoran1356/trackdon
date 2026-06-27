@@ -32,7 +32,7 @@ export async function crearRendicion(
   const monto = Math.max(0, Number(String(formData.get('monto_usd') ?? '0').replace(',', '.')) || 0);
   const destino_tipo = String(formData.get('destino_tipo') ?? '').trim();
 
-  if (!concepto || concepto.length < 3) return { error: 'Describí el gasto (mín 3 caracteres).' };
+  if (!concepto || concepto.length < 3) return { error: 'Describe el gasto (mín 3 caracteres).' };
   if (monto <= 0) return { error: 'El monto en USD debe ser mayor a 0.' };
   if (!DESTINOS.has(destino_tipo)) return { error: 'Destino inválido.' };
 
