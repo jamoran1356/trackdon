@@ -90,13 +90,13 @@ export async function testSmtp(_prev: SmtpState, formData: FormData): Promise<Sm
     .select('host, port, username, password, from_email, from_name, secure')
     .eq('id', 1)
     .maybeSingle();
-  if (!cfg) return { error: 'Primero guardá la configuración SMTP.' };
+  if (!cfg) return { error: 'Primero guarda la configuración SMTP.' };
 
   let password: string;
   try {
     password = decrypt(cfg.password);
   } catch {
-    return { error: 'No pude descifrar la password guardada. Volvé a guardarla.' };
+    return { error: 'No pude descifrar la password guardada. Vuelve a guardarla.' };
   }
 
   try {

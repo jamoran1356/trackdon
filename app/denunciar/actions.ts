@@ -80,7 +80,7 @@ export async function crearDenuncia(
   if (error) {
     // Rate limit trigger usa exception → mensaje user-friendly
     if (/Rate limit/i.test(error.message)) {
-      return { error: 'Llegaste al límite de denuncias por hoy (5 / 24 h). Volvé mañana.' };
+      return { error: 'Llegaste al límite de denuncias por hoy (5 / 24 h). Vuelve mañana.' };
     }
     return { error: error.message };
   }
