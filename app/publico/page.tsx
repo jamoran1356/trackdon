@@ -11,7 +11,8 @@ import {
   getCentrosActivos,
   getInfluencersConRendicion
 } from '@/lib/supabase/queries';
-import { Box, HeartHandshake, Megaphone, ShieldCheck, Users, Wallet } from 'lucide-react';
+import { getEventosActivos } from '@/lib/supabase/eventos';
+import { Box, HeartHandshake, Megaphone, ShieldCheck, Users, Wallet, MapPin, ArrowRight } from 'lucide-react';
 
 export const metadata = { title: 'Panel público' };
 export const revalidate = 60;  // refresh aggregates once per minute
@@ -40,12 +41,23 @@ function relativeTime(iso: string | null | undefined): string {
   return `hace ${d} d`;
 }
 
+const categoriaLabel: Record<string, string> = {
+  terremoto: 'Terremoto',
+  inundacion: 'Inundación',
+  huracan: 'Huracán',
+  incendio: 'Incendio',
+  conflicto: 'Conflicto',
+  crisis_humanitaria: 'Crisis humanitaria',
+  otro: 'Otro'
+};
+
 export default async function PublicoPage() {
-  const [totales, donacionesRes, centrosRes, influencersRes] = await Promise.all([
+  const [totales, donacionesRes, centrosRes, influencersRes, eventos] = await Promise.all([
     getTotalesPublico(),
     getDonacionesRecientes(8),
     getCentrosActivos(8),
-    getInfluencersConRendicion(8)
+    getInfluencersConRendicion(8),
+    getEventosActivos()
   ]);
 
   const donaciones = donacionesRes.data;
@@ -66,6 +78,52 @@ export default async function PublicoPage() {
             solo pseudónimos.
           </p>
         </div>
+
+        {/* Eventos activos */}
+        {eventos.length > 0 && (
+          <section className="mb-10">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold tracking-tight">Eventos en curso</h2>
+              {eventos.length > 3 && (
+                <Link href="#" className="text-sm text-primary hover:underline">Ver todos</Link>
+              )}
+            </div>
+            <div className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+              {eventos.slice(0, 6).map((e) => (
+                <Link key={e.evento_id} href={`/e/${e.slug}`} className="group">
+                  <div className="rounded-2xl border bg-card p-5 transition-colors hover:border-primary/40">
+                    <div className="flex items-center justify-between">
+                      <Badge variant="outline">{categoriaLabel[e.categoria] ?? e.categoria}</Badge>
+                      <span className="text-xs text-muted-foreground inline-flex items-center gap-1">
+                        ver <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+                      </span>
+                    </div>
+                    <p className="mt-3 font-semibold text-base">{e.nombre}</p>
+                    {e.lugar && (
+                      <p className="mt-1 text-xs text-muted-foreground inline-flex items-center gap-1">
+                        <MapPin className="h-3 w-3" /> {e.lugar}
+                      </p>
+                    )}
+                    <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
+                      <div>
+                        <p className="text-muted-foreground">Donado</p>
+                        <p className="mt-0.5 font-mono font-semibold">{formatUsd(Number(e.total_donaciones_usd))}</p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground">Entregado</p>
+                        <p className="mt-0.5 font-mono font-semibold">{formatUsd(Number(e.total_rendido_usd))}</p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground">Centros</p>
+                        <p className="mt-0.5 font-mono font-semibold">{e.centros_activos}</p>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Stats */}
         <section className="grid gap-3 md:grid-cols-3 lg:grid-cols-6">
