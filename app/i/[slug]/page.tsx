@@ -67,6 +67,17 @@ export default async function InfluencerPage({ params }: Params) {
 
   const { data: rendiciones } = await getRendicionesVerificadasInfluencer(i.id);
 
+  // Estado de revisión pública (auditoría admin)
+  const { createSupabaseAdmin } = await import('@/lib/supabase/server');
+  const admin = createSupabaseAdmin();
+  const { data: rev } = await admin
+    .from('influencers')
+    .select('revision_estado, revision_motivo')
+    .eq('id', i.id)
+    .maybeSingle();
+  const sospechoso = rev?.revision_estado === 'sospechoso';
+  const desactivado = rev?.revision_estado === 'desactivado';
+
   const recibido = Number(i.recibido_usd ?? 0);
   const entregado = Number(i.entregado_usd ?? 0);
   const pendienteVerif = Number(i.pendiente_verif_usd ?? 0);
@@ -92,8 +103,17 @@ export default async function InfluencerPage({ params }: Params) {
             </div>
           )}
           <div className="flex-1">
-            <Badge variant="outline" className="mb-2">Perfil público · influencer</Badge>
+            <div className="mb-2 flex flex-wrap items-center gap-2">
+              <Badge variant="outline">Perfil público · influencer</Badge>
+              {sospechoso && <Badge variant="warning">⚠ Marcado como sospechoso por el equipo</Badge>}
+              {desactivado && <Badge variant="warning">Cuenta desactivada</Badge>}
+            </div>
             <h1 className="text-3xl font-bold tracking-tight md:text-4xl">{i.nombre_publico}</h1>
+            {(sospechoso || desactivado) && rev?.revision_motivo && (
+              <p className="mt-2 rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm">
+                <strong>Motivo público:</strong> {rev.revision_motivo}
+              </p>
+            )}
             {i.bio && <p className="mt-2 max-w-2xl text-muted-foreground">{i.bio}</p>}
             <div className="mt-4 flex flex-wrap gap-2">
               {i.twitter_handle && (
