@@ -10,6 +10,16 @@ cómo terminó llegando al damnificado.
 MIT. Sin venta, sin lucro — el código es público para que cualquier
 organización pueda usarlo o auditarlo.
 
+## Capturas
+
+| Perfil público del influencer | Panel público |
+|---|---|
+| ![Perfil influencer](./public/screenshots/perfil-influencer.png) | ![Panel público](./public/screenshots/panel-publico.png) |
+
+| Dashboard centro de acopio | Dashboard influencer |
+|---|---|
+| ![Dashboard centro](./public/screenshots/dashboard-centro.png) | ![Dashboard influencer](./public/screenshots/dashboard-influencer.png) |
+
 ## El problema
 
 Tras un evento mayor se activan muchos canales de recolección:
