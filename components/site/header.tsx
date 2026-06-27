@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import { Button } from '@/components/ui/button';
 import { UserMenu } from './user-menu';
 import { LanguageSwitch } from './language-switch';
+import { ThemeToggle } from './theme-toggle';
 import { Github } from 'lucide-react';
 
 export async function SiteHeader() {
@@ -29,6 +30,7 @@ export async function SiteHeader() {
           </Link>
         </nav>
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <LanguageSwitch />
           <Button asChild variant="ghost" size="icon" className="hidden sm:inline-flex" aria-label="GitHub">
             <Link href="https://github.com/jamoran1356/trackdon" target="_blank">

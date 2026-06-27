@@ -44,8 +44,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               (function() {
                 try {
                   var pref = localStorage.getItem('trackdon-theme');
-                  var sys = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                  if (pref === 'dark' || (!pref && sys)) {
+                  if (pref === 'dark') {
                     document.documentElement.classList.add('dark');
                   }
                 } catch (e) {}
