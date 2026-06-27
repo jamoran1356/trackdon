@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { createSupabaseServer, createSupabaseAdmin } from '@/lib/supabase/server';
+import { checkUsernamePolicy, policyMessage } from '@/lib/username-policy';
 
 type Result = { error?: string; ok?: boolean } | null;
 
@@ -63,11 +64,23 @@ export async function changeMyUsername(_prev: Result, formData: FormData): Promi
   if (!user) return { error: 'No autenticado.' };
 
   const newUsername = String(formData.get('username') ?? '').trim().toLowerCase();
-  if (!/^[a-z0-9_-]{3,20}$/.test(newUsername)) {
-    return { error: 'Usuario: 3-20 caracteres, a-z, 0-9, guion y guion bajo.' };
+  const policy = checkUsernamePolicy(newUsername);
+  const admin = createSupabaseAdmin();
+
+  if (!policy.ok) {
+    if (policy.reason === 'blocked_word' || policy.reason === 'reserved') {
+      // Usuario ya autenticado intentando setear algo prohibido → autoban.
+      await admin.from('perfiles').update({
+        banned_at: new Date().toISOString(),
+        banned_motivo: `Intento de username prohibido: "${newUsername}" (${policy.reason})`
+      }).eq('id', user.id);
+      await admin.auth.admin.updateUserById(user.id, { ban_duration: '876000h' }).catch(() => {});
+      await supabase.auth.signOut();
+      return { error: 'Tu cuenta ha sido suspendida por intentar usar un nombre no permitido.' };
+    }
+    return { error: policyMessage(policy.reason) };
   }
 
-  const admin = createSupabaseAdmin();
   const { data: taken } = await admin
     .from('perfiles')
     .select('id')

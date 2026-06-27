@@ -6,6 +6,7 @@ import { createSupabaseServer, createSupabaseAdmin } from '@/lib/supabase/server
 import { sendEmail, otpEmailHtml, otpEmailText } from '@/lib/email';
 import { generateOtp, hashOtp, otpExpiresAt, MAX_ATTEMPTS } from '@/lib/otp';
 import { encrypt, decrypt } from '@/lib/crypto';
+import { checkUsernamePolicy, policyMessage } from '@/lib/username-policy';
 
 export type AuthState = { error?: string } | null;
 
@@ -41,8 +42,10 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return { error: 'Correo inválido.' };
   }
-  if (!/^[a-z0-9_-]{3,20}$/.test(username)) {
-    return { error: 'Usuario: 3-20 caracteres, solo a-z, 0-9, guion y guion bajo.' };
+  const policy = checkUsernamePolicy(username);
+  if (!policy.ok) {
+    console.warn('[signUp] username blocked', { email, username, reason: policy.reason });
+    return { error: policyMessage(policy.reason) };
   }
   if (password.length < 8) {
     return { error: 'La contraseña debe tener al menos 8 caracteres.' };
