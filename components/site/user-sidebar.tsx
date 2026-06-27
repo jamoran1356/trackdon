@@ -36,6 +36,7 @@ export async function UserSidebar() {
     operaItems.push({ href: '/dashboard/centro/vehiculos', label: 'Vehículos', icon: Truck });
     operaItems.push({ href: '/dashboard/centro/asignaciones', label: 'Asignaciones', icon: Link2 });
     operaItems.push({ href: '/dashboard/centro/puntos', label: 'Puntos de recepción', icon: MapPin });
+    operaItems.push({ href: '/dashboard/centro/inventario', label: 'Inventario', icon: Boxes });
     operaItems.push({ href: '/dashboard/centro/costos', label: 'Costos', icon: DollarSign });
   }
   if (user.rol === 'validador') {

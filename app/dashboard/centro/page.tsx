@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Package, Truck, CheckCircle2, Users, Warehouse, MapPin,
-  DollarSign, Calendar, ArrowRight
+  DollarSign, Calendar, Boxes, ArrowRight
 } from 'lucide-react';
 
 export const metadata = { title: 'Mi centro — dashboard' };
@@ -188,6 +188,7 @@ export default async function CentroDashboardHome() {
         <QuickLink href="/dashboard/centro/personal" icon={Users} title="Personal" desc="Voluntarios y empleados" />
         <QuickLink href="/dashboard/centro/vehiculos" icon={Truck} title="Vehículos" desc="Flota y disponibilidad" />
         <QuickLink href="/dashboard/centro/puntos" icon={MapPin} title="Puntos de recepción" desc="Ubicaciones físicas" />
+        <QuickLink href="/dashboard/centro/inventario" icon={Boxes} title="Inventario" desc="Items consolidados" />
         <QuickLink href="/dashboard/centro/costos" icon={DollarSign} title="Costos" desc="Gastos operativos" />
         <QuickLink href="/dashboard/centro/asignaciones" icon={Calendar} title="Asignaciones" desc="Persona ↔ vehículo" />
       </div>

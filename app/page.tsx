@@ -137,17 +137,29 @@ export default async function HomePage() {
               <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">{t('actors_title')}</h2>
             </div>
             <div className="mt-12 grid gap-4 md:grid-cols-3">
-              {actors.map((it) => (
-                <Card key={it.title} className="group hover:border-primary/40 transition-colors">
-                  <CardContent className="p-6">
-                    <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                      <it.icon className="h-5 w-5" />
-                    </div>
-                    <h3 className="mt-4 text-lg font-semibold">{it.title}</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">{it.desc}</p>
-                  </CardContent>
-                </Card>
-              ))}
+              {actors.map((it, idx) => {
+                const cta = idx === 0
+                  ? { href: '/donar', label: 'Registrar mi donación' }
+                  : idx === 1
+                    ? { href: '/registro-centro', label: 'Registrar mi centro' }
+                    : { href: '/influencers/nuevo', label: 'Crear mi perfil' };
+                return (
+                  <Card key={it.title} className="group flex flex-col hover:border-primary/40 transition-colors">
+                    <CardContent className="flex flex-1 flex-col p-6">
+                      <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                        <it.icon className="h-5 w-5" />
+                      </div>
+                      <h3 className="mt-4 text-lg font-semibold">{it.title}</h3>
+                      <p className="mt-1 text-sm text-muted-foreground">{it.desc}</p>
+                      <div className="mt-auto pt-4">
+                        <Button asChild variant="outline" size="sm" className="w-full">
+                          <Link href={cta.href}>{cta.label} <ArrowRight className="h-4 w-4" /></Link>
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </div>
         </section>
