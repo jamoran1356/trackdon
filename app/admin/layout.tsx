@@ -4,7 +4,7 @@ import { getSessionUser } from '@/lib/auth';
 import { signOut } from '@/app/(auth)/actions';
 import {
   LayoutDashboard, Calendar, Warehouse, Megaphone, ShieldCheck,
-  AlertTriangle, Users, ScrollText, Mail, Palette, FileText,
+  AlertTriangle, Users, ScrollText, Mail, Palette, FileText, Handshake,
   LogOut, Shield, ExternalLink
 } from 'lucide-react';
 
@@ -26,7 +26,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         { href: '/admin/centros', label: 'Centros de acopio', icon: Warehouse },
         { href: '/admin/influencers', label: 'Influencers', icon: Megaphone },
         { href: '/admin/validaciones', label: 'Validaciones', icon: ShieldCheck },
-        { href: '/admin/denuncias', label: 'Denuncias', icon: AlertTriangle }
+        { href: '/admin/denuncias', label: 'Denuncias', icon: AlertTriangle },
+        { href: '/admin/patrocinadores', label: 'Patrocinadores', icon: Handshake }
       ]
     },
     {

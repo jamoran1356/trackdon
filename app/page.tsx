@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import { SiteHeader } from '@/components/site/header';
 import { SiteFooter } from '@/components/site/footer';
 import { ExplorerFeed } from '@/components/landing/explorer-feed';
+import { PatrocinadoresSection } from '@/components/landing/patrocinadores-section';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -179,23 +180,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* CTA */}
-        <section className="border-t border-border/40">
-          <div className="container py-16 md:py-24 text-center">
-            <h2 className="mx-auto max-w-2xl text-3xl font-bold tracking-tight md:text-4xl">{t('cta_title')}</h2>
-            <p className="mx-auto mt-4 max-w-xl text-muted-foreground">{t('cta_subtitle')}</p>
-            <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-              <Button asChild size="lg">
-                <Link href="https://github.com/jamoran1356/trackdon" target="_blank">
-                  <Github className="h-4 w-4" /> {t('cta_code')}
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg">
-                <Link href="https://github.com/jamoran1356/trackdon/issues/new" target="_blank">{t('cta_propose')}</Link>
-              </Button>
-            </div>
-          </div>
-        </section>
+        <PatrocinadoresSection />
       </main>
       <SiteFooter />
     </>
