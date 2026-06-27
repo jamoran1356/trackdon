@@ -24,8 +24,9 @@ export async function signIn(_prev: AuthState, formData: FormData): Promise<Auth
 }
 
 /**
- * Registro directo (sin OTP). Crea la cuenta de inmediato y mete sesión.
- * Modo temporal mientras el envío de correo está caído.
+ * Solicita un código OTP custom. Pide nombre + email + password en /registro.
+ * El password se guarda encriptado (AES-256-GCM) en otp_codes hasta que el
+ * código se consume; ahí se crea el user en auth.users con ese password.
  */
 export async function signUp(_prev: AuthState, formData: FormData): Promise<AuthState> {
   const email = String(formData.get('email') ?? '').trim().toLowerCase();
@@ -47,25 +48,36 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
   }
 
   const admin = createSupabaseAdmin();
-  const { error: createErr } = await admin.auth.admin.createUser({
-    email,
-    password,
-    email_confirm: true,
-    user_metadata: { nombre }
-  });
-  if (createErr && !/already registered|already exists/i.test(createErr.message)) {
-    console.error('[signUp] createUser failed:', createErr.message);
-    return { error: 'No pude crear la cuenta. Intenta de nuevo.' };
+
+  const code = generateOtp();
+  const code_hash = hashOtp(code);
+  const password_enc = encrypt(password);
+  const expires_at = otpExpiresAt().toISOString();
+
+  const { error: insertErr } = await admin
+    .from('otp_codes')
+    .insert({ email, nombre, code_hash, password_enc, expires_at });
+  if (insertErr) {
+    if (/Rate limit/i.test(insertErr.message)) {
+      return { error: 'Demasiados códigos en las últimas 24 h. Esperá un rato.' };
+    }
+    console.error('[signUp] otp insert:', insertErr.message);
+    return { error: 'No pude generar el código. Intenta de nuevo.' };
   }
 
-  const supabase = await createSupabaseServer();
-  const { error: signInErr } = await supabase.auth.signInWithPassword({ email, password });
-  if (signInErr) {
-    return { error: 'Cuenta creada pero no pude iniciar sesión. Intenta entrar en /login.' };
+  const sent = await sendEmail(
+    email,
+    'trackdon · código de verificación',
+    otpEmailHtml(code, nombre),
+    otpEmailText(code, nombre)
+  );
+  if (!sent.ok) {
+    console.error('[signUp] email send failed:', sent.error);
+    return { error: 'No pude enviar el correo. Intenta de nuevo en un minuto.' };
   }
 
   revalidatePath('/', 'layout');
-  redirect('/dashboard');
+  redirect(`/registro/verificar?email=${encodeURIComponent(email)}`);
 }
 
 export type OtpState = { error?: string; resent?: boolean } | null;
