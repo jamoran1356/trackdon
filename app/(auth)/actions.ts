@@ -121,7 +121,7 @@ export async function verifyEmailOtp(_prev: OtpState, formData: FormData): Promi
 
   const { data: rows } = await admin
     .from('otp_codes')
-    .select('id, code_hash, expires_at, consumed_at, attempts, nombre, username, password_enc')
+    .select('id, code_hash, expires_at, consumed_at, attempts, nombre, username, password_enc, tipo_signup, extra_data')
     .eq('email', email)
     .is('consumed_at', null)
     .order('creado_at', { ascending: false })
@@ -174,12 +174,40 @@ export async function verifyEmailOtp(_prev: OtpState, formData: FormData): Promi
     }
   }
 
+  // Si el OTP era de signup tipo 'centro' → crear centro y vincular al user
+  let nextPath = '/dashboard';
+  if (row.tipo_signup === 'centro' && row.extra_data) {
+    const centroData = row.extra_data as {
+      nombre: string; tipo: string;
+      direccion: string | null; email_contacto: string | null; evento_id: string | null;
+    };
+    const { data: list } = await admin.auth.admin.listUsers({ page: 1, perPage: 200 });
+    const userRow = list?.users.find((u: { id: string; email?: string }) => u.email?.toLowerCase() === email);
+    if (userRow) {
+      const { data: c } = await admin.from('centros_acopio').insert({
+        nombre: centroData.nombre, tipo: centroData.tipo,
+        direccion: centroData.direccion, email_contacto: centroData.email_contacto,
+        evento_id: centroData.evento_id, activo: true
+      }).select('id').single();
+      if (c) {
+        const { data: r } = await admin.from('responsables')
+          .insert({ centro_id: c.id, usuario_auth_id: userRow.id, nombre: '', rol: 'admin' })
+          .select('id').single();
+        if (r) {
+          await admin.from('centros_acopio').update({ responsable_principal_id: r.id }).eq('id', c.id);
+        }
+        await admin.from('perfiles').update({ rol: 'centro_admin' }).eq('id', userRow.id);
+        nextPath = '/dashboard/centro';
+      }
+    }
+  }
+
   const supabase = await createSupabaseServer();
   const { error: signInErr } = await supabase.auth.signInWithPassword({ email, password });
   if (signInErr) return { error: signInErr.message };
 
   revalidatePath('/', 'layout');
-  redirect('/dashboard');
+  redirect(nextPath);
 }
 
 /**
