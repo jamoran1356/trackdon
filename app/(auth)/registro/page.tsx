@@ -10,8 +10,9 @@ export async function generateMetadata() {
   return { title: t('signup_title') };
 }
 
-export default async function RegistroPage() {
+export default async function RegistroPage({ searchParams }: { searchParams: Promise<{ email?: string; invite_token?: string }> }) {
   const t = await getTranslations('auth');
+  const { email, invite_token } = await searchParams;
   return (
     <>
       <SiteHeader />
@@ -22,7 +23,12 @@ export default async function RegistroPage() {
             <CardDescription>{t('signup_subtitle')}</CardDescription>
           </CardHeader>
           <CardContent>
-            <SignupForm />
+            {invite_token && (
+              <div className="mb-4 rounded-md border border-primary/40 bg-primary/5 px-3 py-2 text-xs">
+                Vienes desde una invitación. Tu cuenta queda automáticamente vinculada cuando completes el registro.
+              </div>
+            )}
+            <SignupForm defaultEmail={email ?? ''} />
             <p className="mt-6 text-center text-sm text-muted-foreground">
               {t('have_account')}{' '}
               <Link href="/login" className="text-primary hover:underline font-medium">{t('go_login')}</Link>

@@ -6,12 +6,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   PackageOpen, Truck, FileCheck2, AlertTriangle, Megaphone, Warehouse,
-  ArrowRight, Clock, Radio
+  Package, ArrowRightLeft, ArrowRight, Clock, Radio
 } from 'lucide-react';
 
 type FeedItem = {
   id: string;
-  kind: 'donacion' | 'distribucion' | 'rendicion' | 'denuncia' | 'influencer_verificado' | 'centro_nuevo';
+  kind: 'donacion' | 'distribucion' | 'rendicion' | 'denuncia' | 'influencer_verificado' | 'centro_nuevo' | 'caja_sellada' | 'caja_movida';
   ts: string;
   title: string;
   subtitle: string;
@@ -119,7 +119,9 @@ const kindMeta: Record<FeedItem['kind'], { icon: React.ComponentType<{ className
   rendicion: { icon: FileCheck2, label: 'Rendición', tone: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' },
   denuncia: { icon: AlertTriangle, label: 'Denuncia', tone: 'bg-amber-500/10 text-amber-600 dark:text-amber-400' },
   influencer_verificado: { icon: Megaphone, label: 'Influencer', tone: 'bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400' },
-  centro_nuevo: { icon: Warehouse, label: 'Centro', tone: 'bg-slate-500/10 text-slate-600 dark:text-slate-400' }
+  centro_nuevo: { icon: Warehouse, label: 'Centro', tone: 'bg-slate-500/10 text-slate-600 dark:text-slate-400' },
+  caja_sellada: { icon: Package, label: 'Caja sellada', tone: 'bg-primary/10 text-primary' },
+  caja_movida: { icon: ArrowRightLeft, label: 'Caja en tránsito', tone: 'bg-blue-500/10 text-blue-600 dark:text-blue-400' }
 };
 
 function FeedRow({ item, isNew }: { item: FeedItem; isNew: boolean }) {

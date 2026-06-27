@@ -6,7 +6,7 @@ export const revalidate = 0;
 
 type FeedItem = {
   id: string;
-  kind: 'donacion' | 'distribucion' | 'rendicion' | 'denuncia' | 'influencer_verificado' | 'centro_nuevo';
+  kind: 'donacion' | 'distribucion' | 'rendicion' | 'denuncia' | 'influencer_verificado' | 'centro_nuevo' | 'caja_sellada' | 'caja_movida';
   ts: string;
   title: string;
   subtitle: string;
@@ -16,13 +16,24 @@ type FeedItem = {
 export async function GET() {
   const admin = createSupabaseAdmin();
 
-  const [donaciones, distribuciones, rendiciones, denuncias, influencers, centros] = await Promise.all([
+  const [donaciones, distribuciones, rendiciones, denuncias, influencers, centros, cajas, cajaEventos] = await Promise.all([
     admin.from('donaciones').select('id, descripcion, tipo, valor_estimado_usd, creado_at').order('creado_at', { ascending: false }).limit(12),
     admin.from('distribuciones').select('id, monto_o_descripcion, poblacion_destino, beneficiarios_cantidad, entregado_at, creado_at').order('creado_at', { ascending: false }).limit(12),
     admin.from('rendiciones').select('id, concepto, monto_usd, verificado_at, creado_at').order('creado_at', { ascending: false }).limit(12),
     admin.from('denuncias').select('id, tipo, descripcion, estado, creado_at').order('creado_at', { ascending: false }).limit(12),
     admin.from('influencers').select('id, nombre_publico, slug, verificado_at').not('verificado_at', 'is', null).order('verificado_at', { ascending: false }).limit(12),
-    admin.from('centros_acopio').select('id, nombre, tipo, creado_at').order('creado_at', { ascending: false }).limit(12)
+    admin.from('centros_acopio').select('id, nombre, tipo, creado_at').order('creado_at', { ascending: false }).limit(12),
+    admin.from('cajas')
+      .select('id, codigo, titulo, estado, sellada_at, centros_acopio:centro_destino_id(nombre), perfiles:donante_auth_id(username)')
+      .not('sellada_at', 'is', null)
+      .order('sellada_at', { ascending: false })
+      .limit(12),
+    admin.from('caja_eventos')
+      .select('id, estado_anterior, estado_nuevo, creado_at, cajas:caja_id(codigo, titulo)')
+      .neq('estado_nuevo', 'borrador')
+      .neq('estado_nuevo', 'sellada')
+      .order('creado_at', { ascending: false })
+      .limit(12)
   ]);
 
   type DonRow = { id: string; descripcion: string | null; tipo: string; valor_estimado_usd: number | null; creado_at: string };
@@ -76,6 +87,26 @@ export async function GET() {
       ts: c.creado_at,
       title: `Nuevo centro: ${c.nombre}`,
       subtitle: `tipo ${c.tipo}`
+    })),
+    ...((cajas.data ?? []) as Array<{
+      id: string; codigo: string; titulo: string | null; estado: string; sellada_at: string;
+      centros_acopio: { nombre: string } | null; perfiles: { username: string } | null;
+    }>).map((c) => ({
+      id: `caja-sellada-${c.id}`,
+      kind: 'caja_sellada' as const,
+      ts: c.sellada_at,
+      title: `${c.codigo} sellada${c.titulo ? `: ${c.titulo}` : ''}`,
+      subtitle: `${c.perfiles?.username ? `@${c.perfiles.username}` : 'donante anónimo'} → ${c.centros_acopio?.nombre ?? 'sin centro'}`
+    })),
+    ...((cajaEventos.data ?? []) as Array<{
+      id: string; estado_anterior: string | null; estado_nuevo: string; creado_at: string;
+      cajas: { codigo: string; titulo: string | null } | null;
+    }>).map((e) => ({
+      id: `caja-ev-${e.id}`,
+      kind: 'caja_movida' as const,
+      ts: e.creado_at,
+      title: `${e.cajas?.codigo ?? 'caja'}: ${e.estado_anterior ?? '—'} → ${e.estado_nuevo}`,
+      subtitle: e.cajas?.titulo ?? ''
     }))
   ];
 

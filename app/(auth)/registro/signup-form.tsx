@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-export function SignupForm() {
+export function SignupForm({ defaultEmail = '' }: { defaultEmail?: string }) {
   const t = useTranslations('auth');
   const [state, action, pending] = useActionState<AuthState, FormData>(signUp, null);
   return (
@@ -23,7 +23,7 @@ export function SignupForm() {
       </div>
       <div className="space-y-2">
         <Label htmlFor="email">{t('email')}</Label>
-        <Input id="email" name="email" type="email" required autoComplete="email" placeholder="tu@correo.com" />
+        <Input id="email" name="email" type="email" required autoComplete="email" placeholder="tu@correo.com" defaultValue={defaultEmail} />
       </div>
       <div className="space-y-2">
         <Label htmlFor="password">{t('password')}</Label>
