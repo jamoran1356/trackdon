@@ -1,6 +1,6 @@
 /**
- * Envío de emails. Prefiere SMTP configurado en admin (smtp_config) si está
- * "enabled"; cae a Resend HTTP API si no.
+ * Envío de emails vía SMTP configurado en admin (smtp_config).
+ * Sin fallback a Resend — SMTP propio es el único proveedor.
  */
 
 import nodemailer from 'nodemailer';
@@ -21,55 +21,40 @@ export async function sendEmail(
 ): Promise<SendResult> {
   console.log('[email] sendEmail start', { to, subject });
 
-  // 1) Intentar SMTP de admin
   const smtp = await loadSmtp();
   console.log('[email] loadSmtp result:', smtp ? `host=${smtp.host} port=${smtp.port} from=${smtp.from_email}` : 'null');
-  if (smtp) {
-    try {
-      const transporter = nodemailer.createTransport({
-        host: smtp.host,
-        port: smtp.port,
-        secure: smtp.secure,
-        auth: { user: smtp.username, pass: smtp.password },
-        connectionTimeout: 15_000,
-        greetingTimeout: 10_000,
-        socketTimeout: 20_000
-      });
-      const info = await transporter.sendMail({
-        from: `${smtp.from_name} <${smtp.from_email}>`,
-        to,
-        subject,
-        html,
-        text
-      });
-      console.log('[email] smtp sent', info.messageId);
-      return { ok: true, id: info.messageId };
-    } catch (e) {
-      console.error('[email.smtp] FALLO completo:', {
-        name: (e as Error).name,
-        message: (e as Error).message,
-        stack: (e as Error).stack?.split('\n').slice(0, 5).join(' | ')
-      });
-      // fallthrough a Resend
-    }
+
+  if (!smtp) {
+    return { ok: false, error: 'SMTP no configurado o desactivado. Activálo en /admin/smtp.' };
   }
 
-  // 2) Fallback Resend HTTP
-  const key = process.env.RESEND_API_KEY;
-  if (!key) return { ok: false, error: 'No hay proveedor de email configurado' };
-
-  const FROM = process.env.RESEND_FROM ?? 'trackdon <noreply@trackdonations.xyz>';
   try {
-    const res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ from: FROM, to, subject, html, text })
+    const transporter = nodemailer.createTransport({
+      host: smtp.host,
+      port: smtp.port,
+      secure: smtp.secure,
+      auth: { user: smtp.username, pass: smtp.password },
+      connectionTimeout: 15_000,
+      greetingTimeout: 10_000,
+      socketTimeout: 20_000
     });
-    const body = await res.json().catch(() => ({}));
-    if (!res.ok) return { ok: false, error: body?.message ?? `HTTP ${res.status}` };
-    return { ok: true, id: body?.id };
+    const info = await transporter.sendMail({
+      from: `${smtp.from_name} <${smtp.from_email}>`,
+      to,
+      subject,
+      html,
+      text
+    });
+    console.log('[email] smtp sent', info.messageId);
+    return { ok: true, id: info.messageId };
   } catch (e) {
-    return { ok: false, error: (e as Error).message };
+    const msg = (e as Error).message;
+    console.error('[email.smtp] FALLO:', {
+      name: (e as Error).name,
+      message: msg,
+      stack: (e as Error).stack?.split('\n').slice(0, 5).join(' | ')
+    });
+    return { ok: false, error: msg };
   }
 }
 
@@ -182,7 +167,7 @@ export function invitationEmailText(d: InvitationEmailData): string {
 
 trackdon es el libro público de donaciones humanitarias. Permite que cualquier persona vea quién donó, qué organización recibió, y cómo terminó usándose. Cero custodia de fondos — eres tú quien sigue manejando lo recibido. Pedimos que registres aquí la rendición de gastos para cerrar el rastro.${msg}
 
-Registrate y reclamá las donaciones:
+Registrate y reclama las donaciones:
 ${d.acceptUrl}
 
 El link expira en 30 días. Si no eras la organización destinataria, puedes ignorar este correo.
