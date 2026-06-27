@@ -18,7 +18,6 @@ export default async function CuentaPage() {
       </div>
       <CuentaForms
         email={user.email ?? ''}
-        nombre={user.nombre ?? ''}
         username={user.username}
         nombreReal={user.nombreReal ?? ''}
         kycVerifiedAt={user.kycVerifiedAt}

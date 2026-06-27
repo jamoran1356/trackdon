@@ -14,7 +14,6 @@ export default async function AdminCuentaPage() {
       </div>
       <CuentaForms
         email={user?.email ?? ''}
-        nombre={user?.nombre ?? ''}
         username={user?.username ?? ''}
         nombreReal={user?.nombreReal ?? ''}
         kycVerifiedAt={user?.kycVerifiedAt ?? null}

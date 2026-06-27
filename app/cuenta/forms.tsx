@@ -2,7 +2,7 @@
 
 import { useActionState } from 'react';
 import {
-  changeMyPassword, changeMyEmail, changeMyName, changeMyUsername, changeMyNombreReal
+  changeMyPassword, changeMyEmail, changeMyUsername, changeMyNombreReal
 } from './actions';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,14 +12,12 @@ import { Badge } from '@/components/ui/badge';
 
 interface CuentaFormsProps {
   email: string;
-  nombre: string;
   username: string;
   nombreReal: string;
   kycVerifiedAt: string | null;
 }
 
-export function CuentaForms({ email, nombre, username, nombreReal, kycVerifiedAt }: CuentaFormsProps) {
-  const [nameState, nameAction, nameBusy] = useActionState(changeMyName, null);
+export function CuentaForms({ email, username, nombreReal, kycVerifiedAt }: CuentaFormsProps) {
   const [userState, userAction, userBusy] = useActionState(changeMyUsername, null);
   const [realState, realAction, realBusy] = useActionState(changeMyNombreReal, null);
   const [pwState, pwAction, pwBusy] = useActionState(changeMyPassword, null);
@@ -82,25 +80,6 @@ export function CuentaForms({ email, nombre, username, nombreReal, kycVerifiedAt
               <Button type="submit" disabled={realBusy}>{realBusy ? 'Guardando…' : 'Guardar'}</Button>
               {realState?.error && <p className="text-sm text-destructive">{realState.error}</p>}
               {realState?.ok && <p className="text-sm text-primary">Nombre real actualizado.</p>}
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-
-      {/* NOMBRE MOSTRADO (display) */}
-      <Card>
-        <CardContent className="p-6">
-          <h2 className="mb-1 text-base font-semibold">Nombre para mostrar</h2>
-          <p className="mb-4 text-xs text-muted-foreground">Etiqueta amistosa en tu propio panel.</p>
-          <form action={nameAction} className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="nombre">Nombre</Label>
-              <Input id="nombre" name="nombre" defaultValue={nombre} minLength={2} required />
-            </div>
-            <div className="md:col-span-2 flex items-center gap-3">
-              <Button type="submit" disabled={nameBusy}>{nameBusy ? 'Guardando…' : 'Guardar'}</Button>
-              {nameState?.error && <p className="text-sm text-destructive">{nameState.error}</p>}
-              {nameState?.ok && <p className="text-sm text-primary">Nombre actualizado.</p>}
             </div>
           </form>
         </CardContent>

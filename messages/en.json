@@ -96,7 +96,7 @@
     "signup_subtitle": "We create a donor profile. If you're joining as a collection center or influencer, we'll switch your role later.",
     "email": "Email",
     "password": "Password",
-    "name": "Your name (how you'll appear publicly)",
+    "name": "Your name (as it appears on your ID)",
     "submit_login": "Sign in",
     "submit_signup": "Sign up",
     "submit_login_pending": "Signing in…",
