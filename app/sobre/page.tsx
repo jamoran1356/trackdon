@@ -19,21 +19,19 @@ export default function SobrePage() {
           mayoría de los voluntarios trabajan desde campo.
         </p>
 
-        <h2 className="mt-10 text-2xl font-semibold tracking-tight">Estado</h2>
+        <h2 className="mt-10 text-2xl font-semibold tracking-tight">No custodiamos fondos</h2>
         <p className="mt-3 text-muted-foreground">
-          Alpha. Fase 1 (esta) corre sobre Supabase + Next.js + Vercel.
-          Fase 2 mueve los eventos críticos a Solana cuando haya fondos
-          para deploy + auditoría. El programa Solana ya está escrito en{' '}
-          <code className="rounded bg-muted px-1.5 py-0.5 text-sm">programs/trackdon</code>{' '}
-          pero no se ha desplegado.
+          trackdon es un <strong className="text-foreground">libro público</strong>,
+          no una pasarela de pagos ni un intermediario. La gente dona
+          directamente al centro de acopio o al influencer; aquí queda el
+          registro verificable de lo que se entregó, quién lo movió y a
+          dónde llegó. No recibimos ni distribuimos dinero.
         </p>
 
-        <h2 className="mt-10 text-2xl font-semibold tracking-tight">No-monetización</h2>
+        <h2 className="mt-10 text-2xl font-semibold tracking-tight">Estado</h2>
         <p className="mt-3 text-muted-foreground">
-          El proyecto es sin fines de lucro. El smart contract está
-          intencionalmente diseñado <strong className="text-foreground">sin función de retiro para el authority</strong>:
-          los únicos fondos que salen del vault son los que reclama un
-          damnificado registrado.
+          Alpha. Corre sobre Supabase + Next.js + Vercel. El repo es público
+          y cualquiera puede auditar el código o proponer mejoras.
         </p>
 
         <h2 className="mt-10 text-2xl font-semibold tracking-tight">Privacidad</h2>

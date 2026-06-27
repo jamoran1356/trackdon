@@ -2,19 +2,18 @@
 
 ## Status
 
-**Draft. NO DEPLOY.**
+**Archivado · no se va a deployear.**
 
-El código vive aquí para que la lógica de transparencia esté pública desde
-el día uno (cualquiera puede leerlo, criticarlo, proponer mejoras). Pero el
-programa **no está auditado**, **no tiene tests**, y **no se va a deployear
-a devnet o mainnet** hasta:
+> **Decisión de producto (2026-06-27):** trackdon no va a custodiar fondos
+> de terceros. La app es un **libro público** de trazabilidad — registra
+> qué se donó, a qué centro, qué responsable lo movió y cómo terminó
+> entregándose. La gente dona DIRECTO al centro o influencer; nosotros
+> no pasamos plata por en medio.
 
-1. Una revisión de seguridad seria (interna + idealmente externa).
-2. Suite de tests completa (mocha + bankrun).
-3. Fondos para cubrir costos de deploy + auditoría + monitoreo.
-
-Mientras tanto, fase 1 emula la lógica usando Supabase como fuente de
-verdad. Las funciones del programa tienen su contraparte off-chain.
+Este contrato queda en el repo como **referencia histórica** del diseño
+explorado. Si en algún momento un proyecto descendiente quisiera
+custodiar fondos, este código sirve de partida — pero requeriría
+auditoría completa antes de cualquier deploy.
 
 ## Filosofía del contrato
 

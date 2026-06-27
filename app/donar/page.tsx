@@ -3,8 +3,7 @@ import { SiteHeader } from '@/components/site/header';
 import { SiteFooter } from '@/components/site/footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Box, Wallet, Banknote, ArrowRight } from 'lucide-react';
+import { Box, Banknote, ArrowRight } from 'lucide-react';
 
 export const metadata = { title: 'Donar' };
 
@@ -13,66 +12,60 @@ export default function DonarPage() {
     <>
       <SiteHeader />
       <main className="container max-w-3xl py-8 md:py-14">
-        <Badge variant="outline" className="mb-4">Borrador · UI</Badge>
         <h1 className="text-3xl font-bold tracking-tight md:text-4xl">¿Qué quieres donar?</h1>
         <p className="mt-3 text-muted-foreground">
-          Cada donación queda registrada con tu nombre (o anónima si lo
-          prefieres) y obtiene un ID de tracking para que puedas seguir
-          su recorrido en cualquier momento.
+          trackdon <strong>no custodia fondos</strong> — somos un libro
+          público. Tú entregas directo al centro o haces la transferencia, y
+          aquí registras lo que pasó para que quede trazable.
         </p>
 
-        <div className="mt-8 grid gap-3 md:grid-cols-3">
-          {[
-            {
-              icon: Box,
-              title: 'Bienes físicos',
-              desc: 'Ropa, comida, medicinas, agua, higiene.',
-              cta: 'Registrar entrega'
-            },
-            {
-              icon: Wallet,
-              title: 'Cripto',
-              desc: 'USDC / SOL directo a la wallet del centro o influencer.',
-              cta: 'Conectar wallet'
-            },
-            {
-              icon: Banknote,
-              title: 'Transferencia',
-              desc: 'Zelle, banco, otros. Subes comprobante para que quede registrado.',
-              cta: 'Subir comprobante'
-            }
-          ].map((opt) => (
-            <Card key={opt.title} className="group hover:border-primary/40 transition-colors">
-              <CardContent className="p-5">
-                <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary">
-                  <opt.icon className="h-5 w-5" />
-                </div>
-                <h2 className="mt-4 text-lg font-semibold">{opt.title}</h2>
-                <p className="mt-1 text-sm text-muted-foreground">{opt.desc}</p>
-                <Button variant="ghost" size="sm" className="mt-4 px-0 text-primary hover:bg-transparent hover:text-primary/80" disabled>
-                  {opt.cta}
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="mt-8 grid gap-3 md:grid-cols-2">
+          <Card className="group transition-colors hover:border-primary/40">
+            <CardContent className="p-5">
+              <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary">
+                <Box className="h-5 w-5" />
+              </div>
+              <h2 className="mt-4 text-lg font-semibold">Bienes físicos</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Ropa, comida, medicinas, agua, higiene. Lo entregas en un
+                centro y aquí lo registramos con su rastro.
+              </p>
+              <Button asChild variant="ghost" size="sm" className="mt-4 px-0 text-primary hover:bg-transparent hover:text-primary/80">
+                <Link href="/donar/registrar-entrega">
+                  Registrar entrega <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="group transition-colors hover:border-primary/40">
+            <CardContent className="p-5">
+              <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary">
+                <Banknote className="h-5 w-5" />
+              </div>
+              <h2 className="mt-4 text-lg font-semibold">Transferencia / Zelle</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Tú envías directo a un influencer o fundación verificada.
+                Suben el comprobante y queda en el registro público.
+              </p>
+              <Button asChild variant="ghost" size="sm" className="mt-4 px-0 text-primary hover:bg-transparent hover:text-primary/80">
+                <Link href="/publico">
+                  Ver receptores activos <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
         </div>
 
-        <Card className="mt-10 border-amber-500/30 bg-amber-500/5">
+        <Card className="mt-10">
           <CardHeader>
-            <CardTitle className="text-base">Esta vista es un borrador</CardTitle>
+            <CardTitle className="text-base">¿Por qué no procesamos donaciones en cripto?</CardTitle>
             <CardDescription>
-              La integración real (Supabase + wallet + comprobantes) llega en
-              el primer sprint. Si quieres ayudar a construirla, abre un Issue
-              en{' '}
-              <Link
-                href="https://github.com/jamoran1356/trackdon/issues/new"
-                target="_blank"
-                className="underline hover:no-underline"
-              >
-                el repo
-              </Link>
-              .
+              Decidimos no ser custodios. Si trackdon recibiera fondos y los
+              distribuyera, asumimos responsabilidad legal y fiduciaria que no
+              queremos. En cambio, somos el registro público: donas a quien
+              elijas (centro o influencer), y aquí queda la traza verificable
+              de lo que se hizo con tu aporte.
             </CardDescription>
           </CardHeader>
         </Card>
