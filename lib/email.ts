@@ -1,15 +1,11 @@
 /**
  * Envío de emails vía Resend HTTP API (no SMTP).
  *
- * Requiere RESEND_API_KEY en env.
- *
- * Mientras `trackdonations.xyz` no esté verificado en Resend, usa
- * `onboarding@resend.dev` como remitente (limita a enviar al email del
- * owner de Resend). Cuando el dominio esté verificado, cambiar a
- * `noreply@trackdonations.xyz`.
+ * Requiere RESEND_API_KEY en env. Dominio `trackdonations.xyz` verificado
+ * en Resend.
  */
 
-const FROM = process.env.RESEND_FROM ?? 'trackdon <onboarding@resend.dev>';
+const FROM = process.env.RESEND_FROM ?? 'trackdon <noreply@trackdonations.xyz>';
 const RESEND_API = 'https://api.resend.com/emails';
 
 export interface SendResult {
