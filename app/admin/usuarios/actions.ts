@@ -48,7 +48,7 @@ export async function toggleBan(_prev: Result, formData: FormData): Promise<Resu
     const motivo = String(formData.get('motivo') ?? '').trim() || null;
     const action = String(formData.get('action') ?? '');
     if (!userId) return { error: 'Falta user_id.' };
-    if (userId === me) return { error: 'No puedes banearte a tú mismo.' };
+    if (userId === me) return { error: 'No puedes banearte a ti mismo.' };
 
     const admin = createSupabaseAdmin();
     if (action === 'ban') {
@@ -56,10 +56,7 @@ export async function toggleBan(_prev: Result, formData: FormData): Promise<Resu
         banned_at: new Date().toISOString(),
         banned_motivo: motivo
       }).eq('id', userId);
-      // También invalidar sesión: ban duro = 100 años
-      const banUntil = new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000).toISOString();
       await admin.auth.admin.updateUserById(userId, { ban_duration: '876000h' }).catch(() => {});
-      void banUntil;
     } else {
       await admin.from('perfiles').update({
         banned_at: null,
@@ -84,6 +81,25 @@ export async function adminResetPassword(_prev: Result, formData: FormData): Pro
 
     const admin = createSupabaseAdmin();
     const { error } = await admin.auth.admin.updateUserById(userId, { password: newPassword });
+    if (error) return { error: error.message };
+
+    revalidatePath('/admin/usuarios');
+    return { ok: true };
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
+}
+
+export async function deleteUser(_prev: Result, formData: FormData): Promise<Result> {
+  try {
+    const me = await requireSuperAdmin();
+    const userId = String(formData.get('user_id') ?? '');
+    if (!userId) return { error: 'Falta user_id.' };
+    if (userId === me) return { error: 'No puedes eliminar tu propia cuenta desde aquí.' };
+
+    const admin = createSupabaseAdmin();
+    // Borra el auth.user; el perfil cae en cascada por FK.
+    const { error } = await admin.auth.admin.deleteUser(userId);
     if (error) return { error: error.message };
 
     revalidatePath('/admin/usuarios');

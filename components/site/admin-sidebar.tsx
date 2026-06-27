@@ -4,7 +4,7 @@ import { signOut } from '@/app/(auth)/actions';
 import {
   LayoutDashboard, Calendar, Warehouse, Megaphone, ShieldCheck,
   AlertTriangle, Users, ScrollText, Mail, Palette, FileText, Handshake,
-  LogOut, Shield, ExternalLink
+  KeyRound, LogOut, Shield, ExternalLink
 } from 'lucide-react';
 
 export async function AdminSidebar() {
@@ -30,7 +30,8 @@ export async function AdminSidebar() {
       title: 'Sistema',
       items: [
         { href: '/admin/usuarios', label: 'Usuarios y roles', icon: Users },
-        { href: '/admin/auditoria', label: 'Auditoría / log', icon: ScrollText }
+        { href: '/admin/auditoria', label: 'Auditoría / log', icon: ScrollText },
+        { href: '/admin/api', label: 'API keys', icon: KeyRound }
       ]
     },
     {
