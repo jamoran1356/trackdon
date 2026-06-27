@@ -41,6 +41,12 @@ export function SignupForm() {
       <Button type="submit" className="w-full" disabled={pending}>
         {pending ? t('submit_signup_pending') : t('submit_signup')}
       </Button>
+      <p className="text-center text-xs text-muted-foreground">
+        Al crear cuenta aceptas los{' '}
+        <a href="/terminos" target="_blank" className="text-primary hover:underline">Términos</a>
+        {' '}y la{' '}
+        <a href="/privacidad" target="_blank" className="text-primary hover:underline">Política de privacidad</a>.
+      </p>
     </form>
   );
 }

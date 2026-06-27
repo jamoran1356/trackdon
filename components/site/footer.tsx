@@ -15,6 +15,8 @@ export async function SiteFooter() {
           <Link href="/publico" className="hover:text-foreground">{tCommon('panel_publico')}</Link>
           <Link href="/denunciar" className="hover:text-foreground">{tCommon('denunciar')}</Link>
           <Link href="/sobre" className="hover:text-foreground">{tCommon('sobre')}</Link>
+          <Link href="/privacidad" className="hover:text-foreground">Privacidad</Link>
+          <Link href="/terminos" className="hover:text-foreground">Términos</Link>
           <Link
             href="https://github.com/jamoran1356/trackdon"
             target="_blank"
