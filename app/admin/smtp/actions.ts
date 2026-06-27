@@ -1,9 +1,9 @@
 'use server';
 
+import nodemailer from 'nodemailer';
 import { revalidatePath } from 'next/cache';
 import { createSupabaseServer, createSupabaseAdmin } from '@/lib/supabase/server';
-import { encrypt } from '@/lib/crypto';
-import { sendEmail } from '@/lib/email';
+import { encrypt, decrypt } from '@/lib/crypto';
 
 export type SmtpState = { error?: string; ok?: boolean } | null;
 
@@ -84,15 +84,39 @@ export async function testSmtp(_prev: SmtpState, formData: FormData): Promise<Sm
   const to = String(formData.get('to') ?? '').trim();
   if (!to) return { error: 'Falta destinatario.' };
 
-  const res = await sendEmail(
-    to,
-    'trackdon · test SMTP',
-    '<p>Si recibís esto, el SMTP configurado en /admin/smtp está funcionando.</p>',
-    'Si recibís esto, el SMTP configurado en /admin/smtp está funcionando.'
-  );
+  const admin = createSupabaseAdmin();
+  const { data: cfg } = await admin
+    .from('smtp_config')
+    .select('host, port, username, password, from_email, from_name, secure')
+    .eq('id', 1)
+    .maybeSingle();
+  if (!cfg) return { error: 'Primero guardá la configuración SMTP.' };
 
-  if (!res.ok) {
-    return { error: res.error ?? 'Falló el envío' };
+  let password: string;
+  try {
+    password = decrypt(cfg.password);
+  } catch {
+    return { error: 'No pude descifrar la password guardada. Volvé a guardarla.' };
   }
-  return { ok: true };
+
+  try {
+    const transporter = nodemailer.createTransport({
+      host: cfg.host,
+      port: cfg.port,
+      secure: cfg.secure,
+      auth: { user: cfg.username, pass: password }
+    });
+    await transporter.verify();
+    await transporter.sendMail({
+      from: `${cfg.from_name} <${cfg.from_email}>`,
+      to,
+      subject: 'trackdon · test SMTP',
+      html: '<p>Si recibís esto, el SMTP configurado en /admin/smtp está funcionando.</p>',
+      text: 'Si recibís esto, el SMTP configurado en /admin/smtp está funcionando.'
+    });
+    return { ok: true };
+  } catch (e) {
+    console.error('[smtp.test]', (e as Error).message);
+    return { error: (e as Error).message };
+  }
 }
