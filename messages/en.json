@@ -29,7 +29,7 @@
   },
   "header": {
     "nav_panel_publico": "Public board",
-    "nav_donar": "Donate",
+    "nav_donar": "Track",
     "nav_centros": "Centers",
     "nav_influencers": "Influencers"
   },
@@ -120,8 +120,11 @@
     "verify_help": "Didn't get it? Check spam or use the Resend code button."
   },
   "donar": {
-    "hub_title": "What do you want to donate?",
-    "hub_subtitle": "trackdon doesn't hold funds — we're a public ledger. You deliver directly to the center or make the transfer, and here you log what happened so the trail stays public.",
+    "hub_title": "What do you want to track?",
+    "hub_subtitle": "trackdon doesn't hold funds — we're the public ledger. You donate directly (Zelle, wire, in-person drop-off) and here you log who received it so the trail stays public. Then we ask that organization to report how it was spent.",
+    "hub_invite_title": "The organization you donated to isn't on trackdon yet?",
+    "hub_invite_body": "After you log your donation we give you a link to send to the organization. Once they sign up, they can publish the spending report linked to what they received, and you'll see the trail close.",
+    "hub_invite_cta": "How invitations work",
     "hub_bienes_title": "Physical goods",
     "hub_bienes_desc": "Clothes, food, medicine, water, hygiene. You deliver at a center and here we log the trail.",
     "hub_bienes_cta": "Log delivery",

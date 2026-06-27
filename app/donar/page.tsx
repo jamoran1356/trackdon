@@ -4,7 +4,7 @@ import { SiteHeader } from '@/components/site/header';
 import { SiteFooter } from '@/components/site/footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Box, Banknote, ArrowRight } from 'lucide-react';
+import { Box, Banknote, ArrowRight, UserPlus } from 'lucide-react';
 
 export async function generateMetadata() {
   const t = await getTranslations('common');
@@ -52,7 +52,19 @@ export default async function DonarPage() {
           </Card>
         </div>
 
-        <Card className="mt-10">
+        <Card className="mt-8 border-primary/30 bg-primary/5">
+          <CardContent className="flex gap-4 p-5">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary">
+              <UserPlus className="h-5 w-5" />
+            </span>
+            <div className="flex-1">
+              <h2 className="text-base font-semibold">{t('hub_invite_title')}</h2>
+              <p className="mt-1 text-sm text-muted-foreground">{t('hub_invite_body')}</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="mt-6">
           <CardHeader>
             <CardTitle className="text-base">{t('hub_no_cripto_title')}</CardTitle>
             <CardDescription>{t('hub_no_cripto_body')}</CardDescription>
