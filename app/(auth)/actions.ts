@@ -32,6 +32,7 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
   const email = String(formData.get('email') ?? '').trim().toLowerCase();
   const nombre = String(formData.get('nombre') ?? '').trim();
   const password = String(formData.get('password') ?? '');
+  const password_confirm = String(formData.get('password_confirm') ?? '');
 
   if (!email || !nombre || !password) {
     return { error: 'Todos los campos son obligatorios.' };
@@ -41,6 +42,9 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
   }
   if (password.length < 8) {
     return { error: 'La contraseña debe tener al menos 8 caracteres.' };
+  }
+  if (password !== password_confirm) {
+    return { error: 'Las contraseñas no coinciden.' };
   }
 
   const admin = createSupabaseAdmin();

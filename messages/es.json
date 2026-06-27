@@ -106,6 +106,8 @@
     "go_signup": "Regístrate",
     "go_login": "Inicia sesión",
     "min_password": "Mínimo 8 caracteres.",
+    "password_confirm": "Confirmar contraseña",
+    "password_mismatch": "Las contraseñas no coinciden.",
     "otp_note": "Te enviaremos un código de 6 dígitos por correo para verificar la cuenta.",
     "verify_title": "Verifica tu correo",
     "verify_subtitle": "Te enviamos un código de 6 dígitos a {email}. Pégalo aquí para activar tu cuenta.",
