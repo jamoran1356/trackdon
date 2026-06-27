@@ -1,0 +1,60 @@
+{
+  "common": {
+    "donar": "Donar",
+    "registrar_entrega": "Registrar entrega",
+    "registrar_transferencia": "Registrar transferencia",
+    "iniciar_sesion": "Iniciar sesión",
+    "crear_cuenta": "Crear cuenta",
+    "cerrar_sesion": "Cerrar sesión",
+    "panel_publico": "Panel público",
+    "centros": "Centros",
+    "influencers": "Influencers",
+    "denunciar": "Denunciar",
+    "sobre": "Sobre el proyecto",
+    "codigo_github": "Código (GitHub)"
+  },
+  "header": {
+    "nav_panel_publico": "Panel público",
+    "nav_donar": "Donar",
+    "nav_centros": "Centros",
+    "nav_influencers": "Influencers"
+  },
+  "footer": {
+    "tagline": "Open source · MIT · sin fines de lucro."
+  },
+  "landing": {
+    "badge_alpha": "alpha · pre-deploy",
+    "hero_title_a": "Cada donación con su",
+    "hero_title_highlight": "rastro",
+    "hero_subtitle": "Después de una emergencia humanitaria, tu aporte pierde visibilidad apenas lo entregas. trackdon centraliza todo el flujo:",
+    "hero_donante": "quién donó",
+    "hero_centro": "qué centro lo recibió",
+    "hero_damnificado": "cómo llegó al damnificado",
+    "hero_cta_primary": "Donar y trackear",
+    "hero_cta_secondary": "Ver panel público",
+    "hero_footer_note": "Open source MIT · sin fines de lucro",
+    "problem_title": "El rastro termina en la entrega inicial.",
+    "problem_kicker": "El problema",
+    "howit_title": "Tres pasos. Todos públicos.",
+    "howit_kicker": "Cómo funciona"
+  },
+  "auth": {
+    "login_title": "Iniciar sesión",
+    "login_subtitle": "Usa tu correo para entrar a tu dashboard.",
+    "signup_title": "Crear cuenta",
+    "signup_subtitle": "Te creamos un perfil de donante. Si vienes como centro de acopio o influencer, te lo cambiamos después.",
+    "email": "Correo",
+    "password": "Contraseña",
+    "name": "Tu nombre (cómo aparecerás públicamente)",
+    "submit_login": "Entrar",
+    "submit_signup": "Crear cuenta",
+    "submit_login_pending": "Entrando…",
+    "submit_signup_pending": "Creando cuenta…",
+    "no_account": "¿Aún no tienes cuenta?",
+    "have_account": "¿Ya tienes cuenta?",
+    "go_signup": "Regístrate",
+    "go_login": "Inicia sesión",
+    "min_password": "Mínimo 8 caracteres.",
+    "otp_note": "Te enviaremos un código de 6 dígitos por correo para verificar la cuenta."
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "common": {
+    "donar": "Donate",
+    "registrar_entrega": "Log delivery",
+    "registrar_transferencia": "Log transfer",
+    "iniciar_sesion": "Sign in",
+    "crear_cuenta": "Sign up",
+    "cerrar_sesion": "Sign out",
+    "panel_publico": "Public board",
+    "centros": "Centers",
+    "influencers": "Influencers",
+    "denunciar": "Report",
+    "sobre": "About",
+    "codigo_github": "Code (GitHub)"
+  },
+  "header": {
+    "nav_panel_publico": "Public board",
+    "nav_donar": "Donate",
+    "nav_centros": "Centers",
+    "nav_influencers": "Influencers"
+  },
+  "footer": {
+    "tagline": "Open source · MIT · non-profit."
+  },
+  "landing": {
+    "badge_alpha": "alpha · pre-deploy",
+    "hero_title_a": "Every donation has its",
+    "hero_title_highlight": "trail",
+    "hero_subtitle": "After a humanitarian emergency, your contribution loses visibility the moment you hand it over. trackdon centralizes the whole flow:",
+    "hero_donante": "who gave",
+    "hero_centro": "which center received",
+    "hero_damnificado": "how it reached the affected",
+    "hero_cta_primary": "Donate and track",
+    "hero_cta_secondary": "See public board",
+    "hero_footer_note": "Open source MIT · non-profit",
+    "problem_title": "The trail ends at the first hand-off.",
+    "problem_kicker": "The problem",
+    "howit_title": "Three steps. All public.",
+    "howit_kicker": "How it works"
+  },
+  "auth": {
+    "login_title": "Sign in",
+    "login_subtitle": "Use your email to enter your dashboard.",
+    "signup_title": "Create account",
+    "signup_subtitle": "We create a donor profile. If you're joining as a collection center or influencer, we'll switch your role later.",
+    "email": "Email",
+    "password": "Password",
+    "name": "Your name (how you'll appear publicly)",
+    "submit_login": "Sign in",
+    "submit_signup": "Sign up",
+    "submit_login_pending": "Signing in…",
+    "submit_signup_pending": "Creating account…",
+    "no_account": "Don't have an account yet?",
+    "have_account": "Already have an account?",
+    "go_signup": "Sign up",
+    "go_login": "Sign in",
+    "min_password": "Minimum 8 characters.",
+    "otp_note": "We'll send a 6-digit code to your email to verify your account."
+  }
+}

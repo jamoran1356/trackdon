@@ -1,9 +1,12 @@
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 import { Button } from '@/components/ui/button';
 import { UserMenu } from './user-menu';
+import { LanguageSwitch } from './language-switch';
 import { Github } from 'lucide-react';
 
-export function SiteHeader() {
+export async function SiteHeader() {
+  const t = await getTranslations('header');
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
       <div className="container flex h-14 items-center justify-between gap-4">
@@ -13,19 +16,20 @@ export function SiteHeader() {
         </Link>
         <nav className="hidden lg:flex items-center gap-1 text-sm font-medium text-muted-foreground">
           <Link href="/publico" className="px-3 py-1.5 rounded-md hover:bg-accent hover:text-accent-foreground">
-            Panel público
+            {t('nav_panel_publico')}
           </Link>
           <Link href="/donar" className="px-3 py-1.5 rounded-md hover:bg-accent hover:text-accent-foreground">
-            Donar
+            {t('nav_donar')}
           </Link>
           <Link href="/dashboard/centro" className="px-3 py-1.5 rounded-md hover:bg-accent hover:text-accent-foreground">
-            Centros
+            {t('nav_centros')}
           </Link>
           <Link href="/dashboard/influencer" className="px-3 py-1.5 rounded-md hover:bg-accent hover:text-accent-foreground">
-            Influencers
+            {t('nav_influencers')}
           </Link>
         </nav>
         <div className="flex items-center gap-2">
+          <LanguageSwitch />
           <Button asChild variant="ghost" size="icon" className="hidden sm:inline-flex" aria-label="GitHub">
             <Link href="https://github.com/jamoran1356/trackdon" target="_blank">
               <Github className="h-4 w-4" />
