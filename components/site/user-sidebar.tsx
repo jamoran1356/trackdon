@@ -3,7 +3,7 @@ import { signOut } from '@/app/(auth)/actions';
 import { getSessionUser } from '@/lib/auth';
 import {
   LayoutDashboard, UserCircle, PackageOpen, Megaphone, Warehouse, ShieldCheck,
-  Package, Boxes, ExternalLink, LogOut
+  Package, Boxes, Users, Truck, Link2, ExternalLink, LogOut
 } from 'lucide-react';
 
 type NavItem = { href: string; label: string; icon: React.ComponentType<{ className?: string }> };
@@ -32,6 +32,9 @@ export async function UserSidebar() {
   if (user.rol === 'centro_admin' || user.rol === 'centro_responsable') {
     operaItems.push({ href: '/dashboard/centro', label: 'Mi centro', icon: Warehouse });
     operaItems.push({ href: '/dashboard/centro/cajas', label: 'Cajas recibidas', icon: Package });
+    operaItems.push({ href: '/dashboard/centro/personal', label: 'Personal', icon: Users });
+    operaItems.push({ href: '/dashboard/centro/vehiculos', label: 'Vehículos', icon: Truck });
+    operaItems.push({ href: '/dashboard/centro/asignaciones', label: 'Asignaciones', icon: Link2 });
   }
   if (user.rol === 'validador') {
     operaItems.push({ href: '/dashboard/validador', label: 'Cola de validación', icon: ShieldCheck });
