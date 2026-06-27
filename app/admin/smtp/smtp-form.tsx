@@ -83,7 +83,7 @@ export function SmtpForm({ initial }: { initial: Initial | null }) {
             <Button type="submit" variant="outline" disabled={testing}>{testing ? 'Enviando…' : 'Enviar test'}</Button>
           </form>
           {testState?.error && <p className="mt-3 text-sm text-destructive">{testState.error}</p>}
-          {testState?.ok && <p className="mt-3 text-sm text-primary">Email enviado. Revisá la bandeja.</p>}
+          {testState?.ok && <p className="mt-3 text-sm text-primary">Email enviado. Revisa la bandeja.</p>}
         </CardContent>
       </Card>
     </div>
