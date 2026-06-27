@@ -30,15 +30,19 @@ export async function signIn(_prev: AuthState, formData: FormData): Promise<Auth
  */
 export async function signUp(_prev: AuthState, formData: FormData): Promise<AuthState> {
   const email = String(formData.get('email') ?? '').trim().toLowerCase();
+  const username = String(formData.get('username') ?? '').trim().toLowerCase();
   const nombre = String(formData.get('nombre') ?? '').trim();
   const password = String(formData.get('password') ?? '');
   const password_confirm = String(formData.get('password_confirm') ?? '');
 
-  if (!email || !nombre || !password) {
+  if (!email || !nombre || !password || !username) {
     return { error: 'Todos los campos son obligatorios.' };
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return { error: 'Correo inválido.' };
+  }
+  if (!/^[a-z0-9_-]{3,20}$/.test(username)) {
+    return { error: 'Usuario: 3-20 caracteres, solo a-z, 0-9, guion y guion bajo.' };
   }
   if (password.length < 8) {
     return { error: 'La contraseña debe tener al menos 8 caracteres.' };
@@ -49,6 +53,16 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
 
   const admin = createSupabaseAdmin();
 
+  // Verificar username disponible
+  const { data: taken } = await admin
+    .from('perfiles')
+    .select('id')
+    .ilike('username', username)
+    .maybeSingle();
+  if (taken) {
+    return { error: 'Ese nombre de usuario ya está en uso.' };
+  }
+
   const code = generateOtp();
   const code_hash = hashOtp(code);
   const password_enc = encrypt(password);
@@ -56,7 +70,7 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
 
   const { error: insertErr } = await admin
     .from('otp_codes')
-    .insert({ email, nombre, code_hash, password_enc, expires_at });
+    .insert({ email, nombre, username, code_hash, password_enc, expires_at });
   if (insertErr) {
     if (/Rate limit/i.test(insertErr.message)) {
       return { error: 'Demasiados códigos en las últimas 24 h. Esperá un rato.' };
@@ -99,7 +113,7 @@ export async function verifyEmailOtp(_prev: OtpState, formData: FormData): Promi
 
   const { data: rows } = await admin
     .from('otp_codes')
-    .select('id, code_hash, expires_at, consumed_at, attempts, nombre, password_enc')
+    .select('id, code_hash, expires_at, consumed_at, attempts, nombre, username, password_enc')
     .eq('email', email)
     .is('consumed_at', null)
     .order('creado_at', { ascending: false })
@@ -134,11 +148,12 @@ export async function verifyEmailOtp(_prev: OtpState, formData: FormData): Promi
   await admin.from('otp_codes').update({ consumed_at: new Date().toISOString() }).eq('id', row.id);
 
   const nombre = row.nombre;
+  const username = row.username;
   const { error: createErr } = await admin.auth.admin.createUser({
     email,
     password,
     email_confirm: true,
-    user_metadata: { nombre }
+    user_metadata: { nombre, username }
   });
   if (createErr && !/already registered|already exists/i.test(createErr.message)) {
     return { error: createErr.message };

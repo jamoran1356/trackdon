@@ -11,7 +11,7 @@ export default async function AdminUsuariosPage({ searchParams }: { searchParams
 
   const { data: perfiles } = await admin
     .from('perfiles')
-    .select('id, anon_id, rol, nombre_mostrado, banned_at, banned_motivo, creado_at')
+    .select('id, anon_id, username, nombre_real, kyc_verificado_at, rol, nombre_mostrado, banned_at, banned_motivo, creado_at')
     .order('creado_at', { ascending: false })
     .limit(200);
 
@@ -19,16 +19,24 @@ export default async function AdminUsuariosPage({ searchParams }: { searchParams
   const { data: usersList } = await admin.auth.admin.listUsers({ page: 1, perPage: 500 });
   const emailById = new Map((usersList?.users ?? []).map((u: { id: string; email?: string }) => [u.id, u.email ?? '']));
 
-  let rows = (perfiles ?? []).map((p: { id: string; anon_id: string; rol: string; nombre_mostrado: string | null; banned_at: string | null; banned_motivo: string | null; creado_at: string }) => ({
+  type PerfilRow = {
+    id: string; anon_id: string; username: string; nombre_real: string | null;
+    kyc_verificado_at: string | null; rol: string; nombre_mostrado: string | null;
+    banned_at: string | null; banned_motivo: string | null; creado_at: string;
+  };
+
+  let rows = (perfiles ?? []).map((p: PerfilRow) => ({
     ...p,
     email: emailById.get(p.id) ?? ''
   }));
 
   if (q) {
     const needle = q.toLowerCase();
-    rows = rows.filter((r: { email: string; anon_id: string; nombre_mostrado: string | null }) =>
+    rows = rows.filter((r: PerfilRow & { email: string }) =>
       (r.email ?? '').toLowerCase().includes(needle) ||
       (r.anon_id ?? '').toLowerCase().includes(needle) ||
+      (r.username ?? '').toLowerCase().includes(needle) ||
+      (r.nombre_real ?? '').toLowerCase().includes(needle) ||
       (r.nombre_mostrado ?? '').toLowerCase().includes(needle)
     );
   }
@@ -55,7 +63,7 @@ export default async function AdminUsuariosPage({ searchParams }: { searchParams
         <Card><CardContent className="p-8 text-center text-sm text-muted-foreground">Sin usuarios.</CardContent></Card>
       ) : (
         <div className="grid gap-2">
-          {rows.map((r: { id: string; anon_id: string; rol: string; nombre_mostrado: string | null; banned_at: string | null; banned_motivo: string | null; creado_at: string; email: string }) => (
+          {rows.map((r: PerfilRow & { email: string }) => (
             <UserRow key={r.id} user={r} />
           ))}
         </div>

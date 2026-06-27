@@ -16,7 +16,13 @@ export default async function CuentaPage() {
         <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Mi cuenta</h1>
         <p className="text-sm text-muted-foreground">{user.email} · {user.rol}</p>
       </div>
-      <CuentaForms email={user.email ?? ''} nombre={user.nombre ?? ''} />
+      <CuentaForms
+        email={user.email ?? ''}
+        nombre={user.nombre ?? ''}
+        username={user.username}
+        nombreReal={user.nombreReal ?? ''}
+        kycVerifiedAt={user.kycVerifiedAt}
+      />
     </>
   );
 }

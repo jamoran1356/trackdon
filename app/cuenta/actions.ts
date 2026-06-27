@@ -17,7 +17,6 @@ export async function changeMyPassword(_prev: Result, formData: FormData): Promi
   if (next.length < 8) return { error: 'La nueva password debe tener al menos 8 caracteres.' };
   if (next !== confirm) return { error: 'Las passwords no coinciden.' };
 
-  // Verificar password actual
   const { error: signErr } = await supabase.auth.signInWithPassword({
     email: user.email ?? '',
     password: current
@@ -58,6 +57,55 @@ export async function changeMyEmail(_prev: Result, formData: FormData): Promise<
   return { ok: true };
 }
 
+export async function changeMyUsername(_prev: Result, formData: FormData): Promise<Result> {
+  const supabase = await createSupabaseServer();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: 'No autenticado.' };
+
+  const newUsername = String(formData.get('username') ?? '').trim().toLowerCase();
+  if (!/^[a-z0-9_-]{3,20}$/.test(newUsername)) {
+    return { error: 'Usuario: 3-20 caracteres, a-z, 0-9, guion y guion bajo.' };
+  }
+
+  const admin = createSupabaseAdmin();
+  const { data: taken } = await admin
+    .from('perfiles')
+    .select('id')
+    .ilike('username', newUsername)
+    .neq('id', user.id)
+    .maybeSingle();
+  if (taken) return { error: 'Ese nombre de usuario ya está en uso.' };
+
+  const { error } = await admin.from('perfiles').update({ username: newUsername }).eq('id', user.id);
+  if (error) return { error: error.message };
+
+  revalidatePath('/cuenta');
+  revalidatePath('/admin/cuenta');
+  return { ok: true };
+}
+
+export async function changeMyNombreReal(_prev: Result, formData: FormData): Promise<Result> {
+  const supabase = await createSupabaseServer();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: 'No autenticado.' };
+
+  const nombreReal = String(formData.get('nombre_real') ?? '').trim();
+  if (nombreReal.length > 0 && nombreReal.length < 2) {
+    return { error: 'Nombre real muy corto.' };
+  }
+
+  const admin = createSupabaseAdmin();
+  const { error } = await admin
+    .from('perfiles')
+    .update({ nombre_real: nombreReal || null })
+    .eq('id', user.id);
+  if (error) return { error: error.message };
+
+  revalidatePath('/cuenta');
+  revalidatePath('/admin/cuenta');
+  return { ok: true };
+}
+
 export async function changeMyName(_prev: Result, formData: FormData): Promise<Result> {
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
@@ -71,5 +119,6 @@ export async function changeMyName(_prev: Result, formData: FormData): Promise<R
   if (error) return { error: error.message };
 
   revalidatePath('/cuenta');
+  revalidatePath('/admin/cuenta');
   return { ok: true };
 }

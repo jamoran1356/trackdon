@@ -11,6 +11,9 @@ import { Ban, KeyRound, ShieldCheck } from 'lucide-react';
 interface User {
   id: string;
   anon_id: string;
+  username: string;
+  nombre_real: string | null;
+  kyc_verificado_at: string | null;
   email: string;
   rol: string;
   nombre_mostrado: string | null;
@@ -42,12 +45,16 @@ export function UserRow({ user }: { user: User }) {
           </button>
           <div className="min-w-0 flex-1" onClick={() => setOpen(!open)} role="button" tabIndex={0}>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="font-medium">{user.nombre_mostrado ?? '—'}</span>
+              <span className="font-medium">@{user.username}</span>
               <Badge variant="outline" className="font-mono text-xs">{user.anon_id}</Badge>
               <Badge variant={user.rol === 'super_admin' ? 'warning' : 'secondary'}>{user.rol}</Badge>
+              {user.kyc_verificado_at && <Badge variant="default">KYC</Badge>}
               {banned && <Badge variant="warning">BANEADO</Badge>}
             </div>
-            <p className="truncate text-xs text-muted-foreground">{user.email || '(sin email)'}</p>
+            <p className="truncate text-xs text-muted-foreground">
+              {user.nombre_real ? <span className="text-foreground">{user.nombre_real}</span> : <span className="italic">sin nombre real</span>}
+              {' · '}{user.email || '(sin email)'}
+            </p>
             {banned && user.banned_motivo && (
               <p className="mt-1 text-xs text-destructive">Motivo: {user.banned_motivo}</p>
             )}

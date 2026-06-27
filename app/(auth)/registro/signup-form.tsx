@@ -14,6 +14,12 @@ export function SignupForm() {
       <div className="space-y-2">
         <Label htmlFor="nombre">{t('name')}</Label>
         <Input id="nombre" name="nombre" required minLength={2} placeholder="María R." />
+        <p className="text-xs text-muted-foreground">Tu nombre real (visible solo en tu cuenta).</p>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="username">Nombre de usuario</Label>
+        <Input id="username" name="username" required minLength={3} maxLength={20} pattern="[a-z0-9_-]{3,20}" placeholder="maria_r" autoComplete="username" />
+        <p className="text-xs text-muted-foreground">Es lo que se ve en el explorador. 3-20 caracteres: a-z, 0-9, _ , -</p>
       </div>
       <div className="space-y-2">
         <Label htmlFor="email">{t('email')}</Label>
