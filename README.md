@@ -92,7 +92,7 @@ Cada actor tiene su propio panel, con permisos estrictamente separados:
 
 | Capa | Tecnología | Notas |
 |---|---|---|
-| Frontend / Dashboard | Next.js 15 (App Router) + Tailwind + shadcn/ui | Mobile-first. Deploy en Vercel. |
+| Frontend / Dashboard | Next.js 16 (App Router, Turbopack) + Tailwind + shadcn/ui | Mobile-first. Deploy en Vercel. |
 | API | Next.js Route Handlers | Una sola codebase. |
 | DB | Supabase (Postgres + RLS) | Fuente de verdad mientras no hay chain. |
 | Storage | Supabase Storage | Fotos, recibos, actas. Hash almacenado para fase 2. |
