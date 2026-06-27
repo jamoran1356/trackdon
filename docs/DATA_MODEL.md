@@ -1,111 +1,135 @@
 # Modelo de datos (borrador)
 
 > Estado: borrador inicial. Las entidades cambiarán en los primeros sprints
-> a medida que se valide con organizaciones reales.
+> a medida que se valide con organizaciones reales. Este documento es la
+> referencia para escribir el SQL inicial.
+
+Convenciones:
+
+- Todas las tablas tienen `id uuid primary key default gen_random_uuid()`,
+  `creado_at timestamptz default now()`.
+- Toda referencia es `foreign key on delete restrict` salvo en `audit_log`.
+- RLS por defecto **deny-all**; cada role abre solo lo que necesita leer.
+- Campos marcados `🔒` son sensibles y nunca aparecen en queries públicas.
 
 ## Entidades principales
 
-### `donante`
-- `id` (uuid)
-- `wallet_pubkey` (text, único)
-- `nombre_mostrado` (text, opcional, lo que el donante quiere que se vea
-  públicamente — puede ser su nombre real o un alias)
-- `creado_at`
+### `donantes`
+- `usuario_auth_id` (uuid, ref `auth.users`) — null si donó sin cuenta
+- `nombre_mostrado` (text) — lo que el donante quiere que se vea públicamente,
+  puede ser su nombre real o un alias
+- `email_contacto` (text, opcional, 🔒)
+- `wallet_pubkey` (text, opcional)
 
-### `donacion`
-- `id` (uuid)
-- `donante_id`
+### `donaciones`
+- `donante_id` (fk)
 - `tipo` (enum: `bienes` | `dinero_cripto` | `dinero_fiat`)
-- `descripcion` (text, opcional)
-- `valor_estimado` (numeric, en USD)
-- `tx_solana` (text — signature de la transacción en Solana)
-- `hash_descripcion` (text — hash de la descripción detallada, va on-chain)
-- `creado_at`
+- `descripcion` (text)
+- `valor_estimado_usd` (numeric)
+- `centro_recibio_id` (fk a `centros_acopio` — null si va a influencer)
+- `influencer_recibio_id` (fk a `influencers` — null si va a centro)
+- `estado` (enum: `pendiente` | `recibida` | `en_transito` | `distribuida`)
+- `tx_solana` (text, fase 2)
+- `hash_descripcion` (text, fase 2)
 
-### `centro_acopio`
-- `id` (uuid)
+### `centros_acopio`
 - `nombre` (text)
-- `tipo` (enum: `fisico` | `wallet_influencer` | `comprador_medicamentos`)
-- `validador_id` (referencia — qué validador autorizó este centro)
-- `direccion` (text, opcional)
-- `wallet_pubkey` (text, opcional — para receptores cripto)
-- `creado_at`
+- `tipo` (enum: `fisico` | `comprador_medicamentos`)
+- `validador_id` (fk, quien autorizó este centro)
+- `direccion` (text)
+- `geo` (point, opcional)
+- `responsable_principal_id` (fk a `responsables`)
+- `activo` (bool)
 
-### `responsable`
-- `id` (uuid)
-- `centro_id`
+### `responsables`
+- `centro_id` (fk)
+- `usuario_auth_id` (fk, ref `auth.users`)
 - `nombre` (text)
 - `rol` (text — ej. coordinador, voluntario, contador)
-- `wallet_pubkey` (text)
-- `kyc_credential` (text — credencial del proveedor KYC)
+- `kyc_credential` (text, fase 2)
 
-### `custodia`
-- `id` (uuid)
-- `donacion_id`
-- `centro_id`
-- `responsable_id` (quien firma la recepción)
-- `tx_solana` (signature)
-- `recibido_at`
+### `custodias`
+- `donacion_id` (fk)
+- `centro_id` (fk)
+- `responsable_id` (fk, quien firma la recepción)
+- `recibido_at` (timestamptz)
 - `notas` (text)
+- `tx_solana` (text, fase 2)
 
-### `movimiento`
-- `id` (uuid)
-- `custodia_origen_id`
-- `centro_destino_id`
-- `responsable_origen_id`
-- `responsable_destino_id`
-- `tx_solana`
-- `acta_media_id` (referencia a `medias` — foto del acta firmada)
-- `creado_at`
+### `movimientos`
+- `custodia_origen_id` (fk)
+- `centro_destino_id` (fk)
+- `responsable_origen_id` (fk)
+- `responsable_destino_id` (fk)
+- `acta_media_id` (fk a `medias` — foto del acta firmada)
+- `tx_solana` (text, fase 2)
 
-### `damnificado_padron`
-- `id` (uuid)
-- `pseudo_id` (text — lo que aparece on-chain)
-- `wallet_pubkey` (text)
-- `kyc_credential` (text — credencial del proveedor)
-- `validador_id` (quien atestiguó)
-- `metadatos_privados` (jsonb — protegido por RLS, no se commitea ni se
-  expone públicamente)
-- `creado_at`
+### `influencers`
+- `nombre_publico` (text)
+- `usuario_auth_id` (fk)
+- `wallet_pubkey` (text, opcional)
+- `cuentas_fiat` (jsonb, opcional, 🔒 — alias de Zelle, bancos, etc.)
+- `validador_id` (fk, quien lo certificó)
+- `activo` (bool)
 
-### `distribucion`
-- `id` (uuid)
-- `donacion_id` (o `bolsa_id` si viene de la bolsa común)
-- `beneficiario_id` (referencia a `damnificado_padron`)
-- `monto_o_descripcion`
-- `tx_solana`
-- `recibo_media_id` (foto del recibo firmado por el beneficiario)
+### `rendiciones`
+- `influencer_id` (fk)
+- `donacion_id` (fk, opcional — null si es agregado)
+- `concepto` (text)
+- `monto_usd` (numeric)
+- `destino_tipo` (enum: `compra_insumos` | `transferencia_centro` |
+  `entrega_directa` | `otro`)
+- `comprobante_media_id` (fk a `medias`)
+- `tx_solana` (text, fase 2)
+
+### `damnificados_padron` 🔒
+- `pseudo_id` (text — el que aparecería on-chain en fase 2)
+- `wallet_pubkey` (text, opcional)
+- `kyc_credential` (text, fase 2)
+- `validador_id` (fk, quien atestiguó)
+- `nombre_real` (text 🔒)
+- `documento_identidad` (text 🔒)
+- `metadatos_privados` (jsonb 🔒 — composición familiar, nivel de daño,
+  notas del validador, etc.)
+
+### `distribuciones`
+- `donacion_id` (fk, o `bolsa_id` cuando la regla agrupe varias)
+- `damnificado_id` (fk)
+- `monto_o_descripcion` (text)
+- `recibo_media_id` (fk a `medias`)
 - `entregado_at`
+- `tx_solana` (text, fase 2)
 
-### `validador`
-- `id` (uuid)
+### `validadores`
 - `nombre` (text — organización)
-- `wallet_pubkey` (text)
+- `usuario_auth_id` (fk)
+- `wallet_pubkey` (text, opcional)
 - `scope` (enum: `centros` | `damnificados` | `ambos`)
-- `creado_at`
+- `activo` (bool)
 
-### `media`
-- `id` (uuid)
-- `storage_url` (Supabase Storage)
-- `hash_sha256` (text — el mismo hash va on-chain en la tx que la referencia)
-- `mime_type`
-- `subido_por`
-- `subido_at`
+### `medias`
+- `bucket` (text — Supabase Storage)
+- `path` (text)
+- `hash_sha256` (text) — el mismo hash va a chain en fase 2
+- `mime_type` (text)
+- `subido_por_auth_id` (fk)
+- `es_privado` (bool) — true para fotos de damnificados, facturas, padrón
 
 ### `audit_log`
-- `id` (uuid)
-- `actor` (wallet_pubkey o user_id)
-- `accion`
+- `actor_auth_id` (fk, nullable para acciones de sistema)
+- `accion` (text)
+- `tabla` (text)
+- `registro_id` (uuid)
 - `payload` (jsonb)
-- `tx_solana` (si aplica)
-- `timestamp`
+- `tx_solana` (text, fase 2)
 
 ## Reglas operativas
 
-- Toda escritura sensible genera una entrada en `audit_log`.
-- Toda media privada (foto, factura, acta) tiene su hash anclado en una
-  transacción Solana — si alguien manipula la imagen en Supabase, el hash
-  ya no cuadra.
-- `damnificado_padron.metadatos_privados` solo es legible por validadores
-  autorizados con RLS.
-- Las queries públicas del dashboard NUNCA tocan `metadatos_privados`.
+- Toda escritura sensible genera entrada en `audit_log`.
+- `damnificados_padron.nombre_real` y `metadatos_privados` solo legibles
+  por `validador` con scope correspondiente y `super_admin`.
+- `medias` con `es_privado = true` se sirven exclusivamente con signed URL
+  de máximo 5 minutos, validando rol del solicitante.
+- Hash SHA-256 del archivo se calcula al subir y se persiste en `medias`.
+- Cualquier UPDATE/DELETE sobre `damnificados_padron`, `distribuciones`,
+  `rendiciones` queda inmutable en `audit_log`.

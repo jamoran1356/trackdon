@@ -3,76 +3,98 @@
 > Working document. Subject to change as the model gets validated with
 > real-world organizations.
 
-## High-level
+## Fase 1 — MVP (esta fase)
+
+```
+   Donante (web móvil) ─┐
+                        │
+   Centro de acopio ────┼──▶  Next.js (App Router)  ─▶  Supabase
+                        │     • Route handlers          • Postgres + RLS
+   Influencer ──────────┘     • Server actions          • Storage
+                              • Auth (cookies)          • Auth users
+                              │
+                              ▼
+                      Dashboard público (solo lectura)
+```
+
+- Toda la lógica corre en Next.js, deploy a Vercel.
+- Postgres es la fuente de verdad mientras no haya programa on-chain.
+- RLS es la garantía principal de confidencialidad de damnificados.
+- Storage privado: archivos accedidos solo con signed URL de corta vida.
+
+## Fase 2 — On-chain (cuando haya recursos para deploy + auditoría)
 
 ```
                                          ┌────────────────────┐
-   Donante (web wallet) ───── 1 ───────▶ │  Programa Solana   │
+   Donante (wallet) ───── 1 ───────────▶ │  Programa Solana   │
                                          │  (eventos públicos) │
                                          └─────────┬──────────┘
                                                    │ 2 (event)
                                                    ▼
                                          ┌────────────────────┐
-                                         │ Indexer / Supabase │
+                                         │ Indexer + Supabase │
                                          │   (off-chain)      │
                                          └─────────┬──────────┘
                                                    │ 3 (query)
                                                    ▼
                                          ┌────────────────────┐
-                                         │   Dashboard Next   │
-                                         │   (público)        │
+                                         │  Dashboard Next    │
+                                         │  (verifica chain)  │
                                          └────────────────────┘
 ```
 
-1. El donante firma una transacción que registra la donación en el programa
-   Solana. Bienes físicos: la transacción referencia un hash de manifesto.
-   Dinero: la transacción referencia hash de comprobante (Zelle/SWIFT/etc.)
-   o transfiere directamente USDC al contract.
-
-2. Un indexer escucha los eventos del programa y los replica en Supabase
-   con metadatos extra (fotos, descripciones, vínculos con centros).
-
-3. El dashboard consulta Supabase para mostrar el flujo. Para cualquier
-   item visible, el observador puede pedir el "proof" que retorna la
-   transacción Solana original — esto garantiza que la DB no fue manipulada.
+En fase 2 cada evento crítico (donación, custodia, movimiento,
+distribución) emite además una transacción Solana con el hash de la
+evidencia. El dashboard puede mostrar el "proof" — si alguien manipulara
+los datos en Supabase, el hash dejaría de cuadrar.
 
 ## Capas
 
-### On-chain (Solana / Anchor)
+### Supabase / Postgres (fase 1 — fuente de verdad)
 
-Almacena solo lo verificable y auditable:
+Almacena todo:
 
-- `Donacion { id, donante, tipo, valor_pseudo, hash_descripcion, timestamp }`
-- `Custodia { donacion_id, centro_id, responsable, recibido_at }`
-- `Movimiento { custodia_id, centro_origen, centro_destino, hash_acta }`
-- `Distribucion { donacion_id, beneficiario_pseudo_id, monto, hash_recibo }`
-- `Validador { pubkey, scope, atestado_por }`
+- `donantes`, `donaciones`, `centros_acopio`, `responsables`
+- `custodias`, `movimientos`
+- `influencers`, `rendiciones`
+- `damnificados_padron` (RLS estrictísima)
+- `medias` (storage + hash)
+- `audit_log`
 
-Diseño guía: el programa NUNCA recibe datos sensibles, solo hashes y
-referencias. La privacidad se logra antes de hacer la transacción.
+### Auth + roles
 
-### Off-chain (Supabase / Postgres)
+Supabase Auth con roles claros vía claims JWT:
 
-Almacena lo sensible y lo voluminoso:
+- `donante` — público, registra donaciones.
+- `centro_admin` — administra un centro de acopio.
+- `centro_responsable` — firma movimientos en un centro.
+- `influencer` — administra rendiciones de su cuenta.
+- `validador` — atestigua centros y damnificados, lee padrón.
+- `super_admin` — operación / soporte; auditado.
 
-- `centros_acopio` — datos del centro, responsables, ubicación
-- `responsables` — personas vinculadas a centros
-- `damnificados_padron` — KYC pseudónimo + datos privados (RLS estricta)
-- `medias` — fotos, facturas, actas (con hash que casa con on-chain)
-- `audit_log` — bitácora interna
+Cada acción sensible queda en `audit_log` con el actor.
 
-### KYC (proveedor externo)
+### KYC (fase 2)
 
-Civic Pass por defecto. Interfaz `lib/kyc/provider.ts` que abstrae el
-proveedor. El damnificado se verifica con el proveedor; recibimos una
-credencial atada a su wallet. Nuestro programa Solana solo verifica
-"¿tiene credencial X válida?", sin saber quién es.
+Interfaz `lib/kyc/provider.ts` con providers intercambiables:
+`civic`, `truora`, `persona`. El damnificado se verifica con el proveedor
+externo; recibimos una credencial atada a su wallet o ID interno. Nuestro
+backend solo verifica "credencial válida del provider X". La identidad
+real nunca toca nuestros servidores.
+
+### Programa Solana (fase 2)
+
+Almacena hashes y referencias, jamás datos sensibles. Diseño guía: el
+programa nunca recibe nombres, cédulas ni fotos — solo `bytes32` que
+casan contra archivos en Storage y filas en Postgres.
 
 ## Decisiones pendientes
 
-- **Indexer:** Helius webhook vs. propio listener con `@solana/web3.js`.
-- **Distribución equitativa:** lógica en programa Solana vs. propuesta off-chain
-  con ejecución on-chain.
-- **Monedas aceptadas para cash:** SOL, USDC, ambos.
-- **Bridge de donaciones fiat (Zelle, etc.):** modelo de attestation por
-  validador.
+- **Categorización de bienes:** taxonomía inicial (comida, ropa,
+  medicamentos, agua, higiene, otros) — abierta a votación de las primeras
+  ONGs que adopten.
+- **Distribución equitativa:** regla por defecto + override por
+  validador. ¿Per cápita, ponderado por daño, mixto?
+- **Bridge fiat (Zelle, transferencias bancarias):** modelo de
+  attestation por validador.
+- **Notificaciones al donante** cuando su aporte cambia de estado.
