@@ -10,6 +10,7 @@ export function SiteFooter() {
         </div>
         <nav className="flex flex-wrap gap-4">
           <Link href="/publico" className="hover:text-foreground">Panel público</Link>
+          <Link href="/denunciar" className="hover:text-foreground">Denunciar</Link>
           <Link href="/sobre" className="hover:text-foreground">Sobre el proyecto</Link>
           <Link
             href="https://github.com/jamoran1356/trackdon"
