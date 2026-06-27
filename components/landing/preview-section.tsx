@@ -1,52 +1,46 @@
 import Image from 'next/image';
+import { getTranslations } from 'next-intl/server';
 
-interface Shot {
-  src: string;
-  alt: string;
-  label: string;
-  caption: string;
-}
+export async function PreviewSection() {
+  const t = await getTranslations('landing');
+  const tInf = await getTranslations('influencer');
+  const tDash = await getTranslations('dashboard');
+  const tPub = await getTranslations('publico');
 
-const SHOTS: Shot[] = [
-  {
-    src: '/screenshots/perfil-influencer.png',
-    alt: 'Perfil público de un influencer en trackdon mostrando recibido, entregado y rendiciones verificadas',
-    label: 'Perfil público',
-    caption: 'Cada influencer comparte un link como /i/su-nombre. Sus seguidores ven recibido, entregado y solo cuenta lo conciliado con factura.'
-  },
-  {
-    src: '/screenshots/panel-publico.png',
-    alt: 'Panel público con totales agregados y donaciones recientes',
-    label: 'Panel público',
-    caption: 'Cualquiera, sin login, ve cuánto se ha movido y a dónde — totales en vivo y donaciones recientes.'
-  },
-  {
-    src: '/screenshots/dashboard-centro.png',
-    alt: 'Dashboard del centro de acopio con inventario y movimientos',
-    label: 'Dashboard centro',
-    caption: 'Los centros inventarían cada entrada y salida. Cada movimiento queda firmado por un responsable.'
-  },
-  {
-    src: '/screenshots/dashboard-influencer.png',
-    alt: 'Dashboard del influencer con rendiciones y progreso',
-    label: 'Dashboard influencer',
-    caption: 'Los influencers ven su balance recibido vs. rendido y suben los comprobantes de cada gasto.'
-  }
-];
+  const SHOTS = [
+    {
+      src: '/screenshots/perfil-influencer.png',
+      alt: tInf('perfil_badge'),
+      label: tInf('perfil_badge'),
+      caption: tInf('perfil_progress_help').slice(0, 150) + '…'
+    },
+    {
+      src: '/screenshots/panel-publico.png',
+      alt: tPub('title'),
+      label: tPub('title'),
+      caption: tPub('subtitle')
+    },
+    {
+      src: '/screenshots/dashboard-centro.png',
+      alt: tDash('centro_badge'),
+      label: tDash('centro_badge'),
+      caption: tDash('centro_recientes_desc')
+    },
+    {
+      src: '/screenshots/dashboard-influencer.png',
+      alt: tDash('influencer_badge'),
+      label: tDash('influencer_badge'),
+      caption: tDash('influencer_progress_desc')
+    }
+  ];
 
-export function PreviewSection() {
   return (
     <section className="border-t border-border/40 bg-background">
       <div className="container py-16 md:py-24">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-semibold uppercase tracking-wider text-primary">Así se ve</p>
-          <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
-            Hecho para teléfono, transparente por defecto.
-          </h2>
-          <p className="mt-4 text-muted-foreground">
-            Capturas reales de la app — no maquetas. Cada usuario tiene su
-            dashboard según su responsabilidad.
-          </p>
+          <p className="text-sm font-semibold uppercase tracking-wider text-primary">{t('preview_kicker')}</p>
+          <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">{t('preview_title')}</h2>
+          <p className="mt-4 text-muted-foreground">{t('preview_subtitle')}</p>
         </div>
 
         <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">

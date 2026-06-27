@@ -1,0 +1,47 @@
+<div style="font-family:Arial,Helvetica,sans-serif;max-width:520px;margin:0 auto;padding:24px;color:#202124;">
+  <h2 style="color:#1a73e8;margin:0 0 12px;">Confirma tu cuenta en trackdon</h2>
+  <p style="margin:0 0 16px;line-height:1.5;">Pega este código en la pestaña que tienes abierta:</p>
+
+  <div style="font-family:monospace;font-size:36px;font-weight:bold;letter-spacing:0.45em;text-align:center;background:#f1f5f3;border:2px solid #1a73e8;border-radius:12px;padding:18px;margin:24px 0;">
+    {{ .Token }}
+  </div>
+
+  <p style="font-size:13px;color:#5f6368;margin:0 0 12px;line-height:1.4;">
+    Expira en 1 hora. Si no fuiste tú, ignora este correo.
+  </p>
+
+  <hr style="border:none;border-top:1px solid #e8eaed;margin:24px 0;">
+
+  <p style="font-size:13px;color:#5f6368;margin:0 0 8px;line-height:1.4;">
+    Alternativa: confirmar haciendo click aquí:
+  </p>
+  <p style="margin:0 0 24px;">
+    <a href="{{ .ConfirmationURL }}" style="color:#1a73e8;text-decoration:underline;">Confirmar email</a>
+  </p>
+
+  <p style="font-size:12px;color:#80868b;margin:0;">
+    trackdon — open source, sin fines de lucro. <a href="https://github.com/jamoran1356/trackdon" style="color:#80868b;">github.com/jamoran1356/trackdon</a>
+  </p>
+</div>
+
+<hr style="border:none;border-top:1px solid #e8eaed;margin:24px auto;max-width:520px;">
+
+<div style="font-family:Arial,Helvetica,sans-serif;max-width:520px;margin:0 auto;padding:24px;color:#202124;">
+  <h2 style="color:#1a73e8;margin:0 0 12px;">Confirm your trackdon account</h2>
+  <p style="margin:0 0 16px;line-height:1.5;">Paste this code into the open tab:</p>
+
+  <div style="font-family:monospace;font-size:36px;font-weight:bold;letter-spacing:0.45em;text-align:center;background:#f1f5f3;border:2px solid #1a73e8;border-radius:12px;padding:18px;margin:24px 0;">
+    {{ .Token }}
+  </div>
+
+  <p style="font-size:13px;color:#5f6368;margin:0 0 12px;line-height:1.4;">
+    Expires in 1 hour. If you didn't request this, ignore the email.
+  </p>
+
+  <p style="font-size:13px;color:#5f6368;margin:0 0 8px;line-height:1.4;">
+    Or confirm by clicking here:
+  </p>
+  <p style="margin:0;">
+    <a href="{{ .ConfirmationURL }}" style="color:#1a73e8;text-decoration:underline;">Confirm email</a>
+  </p>
+</div>

@@ -32,13 +32,26 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
     return { error: 'La contraseña debe tener al menos 8 caracteres.' };
   }
 
+  // Resolve the redirect target so the link in the email lands back here.
+  const h = await import('next/headers').then(m => m.headers());
+  const origin =
+    process.env.NEXT_PUBLIC_SITE_URL
+    || h.get('origin')
+    || `${h.get('x-forwarded-proto') ?? 'https'}://${h.get('host')}`;
+
   const supabase = await createSupabaseServer();
-  // Triggers Supabase signup confirmation email containing a 6-digit OTP token.
-  // The user MUST verify before being able to sign in.
+  // Triggers Supabase signup confirmation email. On free tier this email
+  // currently only contains a confirmation link; the link lands on
+  // /auth/callback?code=... and exchanges for a session there.
+  // If a custom SMTP / Pro plan is configured later, the same email also
+  // exposes the 6-digit code which is consumed by /registro/verificar.
   const { error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { nombre } }
+    options: {
+      data: { nombre },
+      emailRedirectTo: `${origin}/auth/callback?next=/dashboard`
+    }
   });
   if (error) return { error: error.message };
 

@@ -1,37 +1,35 @@
 'use client';
 import { useActionState } from 'react';
+import { useTranslations } from 'next-intl';
 import { signUp, type AuthState } from '../actions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 export function SignupForm() {
+  const t = useTranslations('auth');
   const [state, action, pending] = useActionState<AuthState, FormData>(signUp, null);
   return (
     <form action={action} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="nombre">Tu nombre (cómo aparecerás públicamente)</Label>
+        <Label htmlFor="nombre">{t('name')}</Label>
         <Input id="nombre" name="nombre" required minLength={2} placeholder="María R." />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="email">Correo</Label>
+        <Label htmlFor="email">{t('email')}</Label>
         <Input id="email" name="email" type="email" required autoComplete="email" placeholder="tu@correo.com" />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="password">Contraseña</Label>
+        <Label htmlFor="password">{t('password')}</Label>
         <Input id="password" name="password" type="password" required autoComplete="new-password" minLength={8} />
-        <p className="text-xs text-muted-foreground">Mínimo 8 caracteres.</p>
+        <p className="text-xs text-muted-foreground">{t('min_password')}</p>
       </div>
-      <p className="rounded-md border border-border/60 bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
-        Te enviaremos un código de 6 dígitos por correo para verificar la cuenta.
-      </p>
+      <p className="rounded-md border border-border/60 bg-muted/40 px-3 py-2 text-xs text-muted-foreground">{t('otp_note')}</p>
       {state?.error && (
-        <p className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          {state.error}
-        </p>
+        <p className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">{state.error}</p>
       )}
       <Button type="submit" className="w-full" disabled={pending}>
-        {pending ? 'Creando cuenta…' : 'Crear cuenta'}
+        {pending ? t('submit_signup_pending') : t('submit_signup')}
       </Button>
     </form>
   );
