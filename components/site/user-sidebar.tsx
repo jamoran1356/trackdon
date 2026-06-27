@@ -3,7 +3,7 @@ import { signOut } from '@/app/(auth)/actions';
 import { getSessionUser } from '@/lib/auth';
 import {
   LayoutDashboard, UserCircle, PackageOpen, Megaphone, Warehouse, ShieldCheck,
-  ExternalLink, LogOut, Shield
+  ExternalLink, LogOut
 } from 'lucide-react';
 
 type NavItem = { href: string; label: string; icon: React.ComponentType<{ className?: string }> };
@@ -36,13 +36,6 @@ export async function UserSidebar() {
   }
   if (operaItems.length > 0) {
     sections.push({ title: 'Operación', items: operaItems });
-  }
-
-  if (user.rol === 'super_admin') {
-    sections.push({
-      title: 'Admin',
-      items: [{ href: '/admin', label: 'Panel admin', icon: Shield }]
-    });
   }
 
   return (

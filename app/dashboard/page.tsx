@@ -16,7 +16,7 @@ export default async function DashboardDispatcher() {
     case 'validador':
       redirect('/dashboard/validador');
     case 'super_admin':
-      redirect('/dashboard/validador');
+      redirect('/admin');
     case 'donante':
     default:
       redirect('/donar');

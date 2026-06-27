@@ -88,7 +88,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <p className="truncate text-muted-foreground">{user.email}</p>
           </div>
           <Link
-            href="/cuenta"
+            href="/admin/cuenta"
             className="block border-t border-border/60 px-4 py-3 text-xs text-muted-foreground hover:bg-accent hover:text-foreground"
           >
             Mi cuenta
