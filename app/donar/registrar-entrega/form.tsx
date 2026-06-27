@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { InviteOrganizacionForm } from './invite-form';
 
 type Tipo = 'bienes' | 'transferencia';
 
@@ -121,9 +122,7 @@ export function RegistrarEntregaForm({
             <Label className="text-base font-semibold">¿A qué receptor enviaste?</Label>
           </div>
           {influencersDelEvento.length === 0 ? (
-            <p className="rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm">
-              No hay influencers / fundaciones activas para este evento todavía.
-            </p>
+            <InviteOrganizacionForm eventoId={eventoId || null} />
           ) : (
             <select
               name="influencer_id"

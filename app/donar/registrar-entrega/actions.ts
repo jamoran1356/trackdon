@@ -5,8 +5,87 @@ import { revalidatePath } from 'next/cache';
 import { createSupabaseAdmin } from '@/lib/supabase/server';
 import { getSessionUser } from '@/lib/auth';
 import { uploadFile } from '@/lib/supabase/storage';
+import { sendEmail, invitationEmailHtml, invitationEmailText } from '@/lib/email';
 
 export type EntregaState = { error?: string } | null;
+export type InviteState = { error?: string; ok?: boolean } | null;
+
+export async function inviteOrganizacion(_prev: InviteState, formData: FormData): Promise<InviteState> {
+  const user = await getSessionUser();
+  if (!user) return { error: 'Tenés que iniciar sesión para invitar.' };
+
+  const email = String(formData.get('email') ?? '').trim().toLowerCase();
+  const eventoId = String(formData.get('evento_id') ?? '').trim() || null;
+  const mensaje = String(formData.get('mensaje') ?? '').trim() || null;
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { error: 'Correo inválido.' };
+  }
+  if (mensaje && mensaje.length > 500) {
+    return { error: 'Mensaje muy largo (máx 500 chars).' };
+  }
+
+  const admin = createSupabaseAdmin();
+
+  const { data: inv, error: insErr } = await admin
+    .from('invitaciones')
+    .insert({
+      email,
+      evento_id: eventoId,
+      invitado_por_auth_id: user.id,
+      mensaje
+    })
+    .select('token, evento_id')
+    .single();
+
+  if (insErr) {
+    if (/Rate limit/i.test(insErr.message)) {
+      return { error: 'Llegaste al límite de 10 invitaciones por día.' };
+    }
+    console.error('[inviteOrganizacion]', insErr.message);
+    return { error: 'No pude crear la invitación.' };
+  }
+
+  let eventoNombre: string | undefined;
+  if (inv.evento_id) {
+    const { data: ev } = await admin
+      .from('eventos')
+      .select('nombre')
+      .eq('id', inv.evento_id)
+      .maybeSingle();
+    eventoNombre = ev?.nombre ?? undefined;
+  }
+
+  const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://trackdonations.xyz';
+  const acceptUrl = `${base}/invitar/${inv.token}`;
+
+  const sent = await sendEmail(
+    email,
+    `${user.username} te invitó a registrar tu organización en trackdon`,
+    invitationEmailHtml({
+      email,
+      remitenteUsername: user.username,
+      eventoNombre,
+      mensajePersonal: mensaje ?? undefined,
+      acceptUrl
+    }),
+    invitationEmailText({
+      email,
+      remitenteUsername: user.username,
+      eventoNombre,
+      mensajePersonal: mensaje ?? undefined,
+      acceptUrl
+    })
+  );
+
+  if (!sent.ok) {
+    console.error('[inviteOrganizacion] email send:', sent.error);
+    return { error: 'No pude enviar la invitación. Intenta de nuevo.' };
+  }
+
+  revalidatePath('/donar/registrar-entrega');
+  return { ok: true };
+}
 
 const TIPOS = new Set(['bienes', 'dinero_fiat']);
 const MAX_COMPROBANTE = 10 * 1024 * 1024;

@@ -107,6 +107,78 @@ export function otpEmailText(code: string, nombre: string): string {
   return `Hola ${nombre},\n\nTu código de verificación para trackdon: ${code}\n\nExpira en 10 minutos. Si no fuiste tú, ignora este correo.\n\ntrackdon — trackdonations.xyz`;
 }
 
+export interface InvitationEmailData {
+  email: string;
+  remitenteUsername: string;
+  eventoNombre?: string;
+  mensajePersonal?: string;
+  acceptUrl: string;
+}
+
+export function invitationEmailHtml(d: InvitationEmailData): string {
+  const eventoLine = d.eventoNombre
+    ? `<p style="margin:0 0 16px;line-height:1.6;">Te están invitando para que registres en qué se invirtieron las donaciones recibidas por el evento <strong>${escapeHtml(d.eventoNombre)}</strong>.</p>`
+    : '';
+  const mensajeBlock = d.mensajePersonal
+    ? `<div style="margin:24px 0;padding:14px 16px;border-left:3px solid #16a34a;background:#f1f5f3;border-radius:4px;">
+         <p style="margin:0 0 6px;font-size:12px;color:#5f6368;text-transform:uppercase;letter-spacing:0.05em;">Mensaje de @${escapeHtml(d.remitenteUsername)}</p>
+         <p style="margin:0;font-size:14px;color:#202124;white-space:pre-wrap;">${escapeHtml(d.mensajePersonal)}</p>
+       </div>`
+    : '';
+
+  return `
+<div style="font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;color:#202124;background:#ffffff;">
+  <div style="display:inline-block;padding:6px 12px;background:#16a34a;color:#ffffff;font-weight:700;font-size:13px;border-radius:999px;letter-spacing:0.05em;">trackdon</div>
+
+  <h1 style="margin:24px 0 12px;font-size:24px;color:#202124;line-height:1.3;">@${escapeHtml(d.remitenteUsername)} te donó algo y necesita que rindas en qué se invirtió.</h1>
+  ${eventoLine}
+
+  <p style="margin:0 0 16px;line-height:1.6;color:#4b5563;">
+    <strong>trackdon</strong> es el libro público de donaciones humanitarias. Permite que cualquier persona vea
+    quién donó, qué centro o organización recibió, y cómo terminó usándose. Cero custodia de fondos — sos vos
+    quien sigue manejando lo recibido. Lo que pedimos es que registres acá la rendición de gastos, con sus
+    comprobantes, para cerrar el rastro.
+  </p>
+
+  ${mensajeBlock}
+
+  <div style="margin:32px 0;text-align:center;">
+    <a href="${d.acceptUrl}" style="display:inline-block;background:#16a34a;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;padding:14px 28px;border-radius:8px;">
+      Registrarme y reclamar las donaciones
+    </a>
+  </div>
+
+  <p style="font-size:13px;color:#5f6368;line-height:1.5;margin:0 0 8px;">
+    <strong>¿Por qué hacer esto?</strong> Porque los donantes están eligiendo apoyar a organizaciones que muestran
+    la traza completa. Estar en trackdon es una señal pública de transparencia.
+  </p>
+
+  <p style="font-size:13px;color:#5f6368;line-height:1.5;margin:0 0 24px;">
+    El link expira en 30 días. Si no eras la organización destinataria de esta donación, podés ignorar este correo.
+  </p>
+
+  <hr style="border:none;border-top:1px solid #e8eaed;margin:24px 0;">
+  <p style="font-size:11px;color:#80868b;margin:0;">
+    Open source · sin fines de lucro · <a href="https://trackdonations.xyz" style="color:#80868b;">trackdonations.xyz</a>
+  </p>
+</div>`.trim();
+}
+
+export function invitationEmailText(d: InvitationEmailData): string {
+  const evento = d.eventoNombre ? `\n\nEvento: ${d.eventoNombre}` : '';
+  const msg = d.mensajePersonal ? `\n\nMensaje de @${d.remitenteUsername}:\n${d.mensajePersonal}` : '';
+  return `@${d.remitenteUsername} te donó algo y necesita que rindas en qué se invirtió.${evento}
+
+trackdon es el libro público de donaciones humanitarias. Permite que cualquier persona vea quién donó, qué organización recibió, y cómo terminó usándose. Cero custodia de fondos — sos vos quien sigue manejando lo recibido. Pedimos que registres acá la rendición de gastos para cerrar el rastro.${msg}
+
+Registrate y reclamá las donaciones:
+${d.acceptUrl}
+
+El link expira en 30 días. Si no eras la organización destinataria, podés ignorar este correo.
+
+trackdon — trackdonations.xyz`;
+}
+
 function escapeHtml(s: string): string {
   return s
     .replace(/&/g, '&amp;')
