@@ -112,15 +112,114 @@ Ver [SECURITY.md](./SECURITY.md). Resumen:
 - Archivos privados nunca con URLs públicas; signed URLs de corta vida.
 - Sin secrets en el repo. `.env.example` solo nombra las variables.
 
+## API REST de integración
+
+trackdon expone una API REST autenticada con API keys para que sistemas
+externos (otras plataformas de tracking, webhooks de pasarelas, planillas
+internas de ONGs) puedan **registrar donaciones** en el libro público sin
+pasar por la UI.
+
+**Base URL:** `https://trackdonations.xyz/api/v1`
+
+**Autenticación:** header `x-api-key: tk_xxxxxxxxxxx`
+(o `Authorization: Bearer tk_xxxxxxxxxxx`).
+Las keys se generan en `/admin/api` (solo `super_admin`).
+La key plain se muestra una sola vez al crearla — en DB queda solo el
+hash SHA-256.
+
+**Scopes:**
+
+| Scope | Permite |
+|---|---|
+| `read` | Lectura completa (atajo) |
+| `read:cajas`, `read:donaciones`, `read:centros`, `read:influencers`, `read:eventos`, `read:rendiciones`, `read:feed` | Lectura específica |
+| `write` | Escritura completa (otorgar con cuidado) |
+| `write:donaciones`, `write:cajas` | Escritura específica |
+
+**Protecciones:**
+
+- Rate limit: 60 req/min lectura, 30 req/min escritura, por key.
+- Body máximo: 200 KB.
+- Validación de payload con `zod`.
+- Idempotencia: `external_ref` único por API key → reenvíos no duplican.
+- Log de cada request (`api_call_log`) con IP hasheada (sha256:16).
+- Sin custodia de fondos. La API solo registra el evento; el dinero
+  o los bienes viajan por fuera.
+
+### Endpoints
+
+| Método | Ruta | Scope | Descripción |
+|---|---|---|---|
+| GET | `/donaciones?limit=20&offset=0` | `read:donaciones` | Listado paginado |
+| **POST** | `/donaciones` | `write:donaciones` | Registrar donación |
+| GET | `/cajas?limit=20&estado=distribuida` | `read:cajas` | Listado de cajas |
+| GET | `/centros?limit=20` | `read:centros` | Centros activos |
+| GET | `/influencers?limit=20` | `read:influencers` | Influencers + métricas |
+| GET | `/eventos?limit=20` | `read:eventos` | Eventos activos |
+
+### POST /api/v1/donaciones — registrar una donación
+
+```bash
+curl -X POST https://trackdonations.xyz/api/v1/donaciones \
+  -H "x-api-key: tk_xxxxxxxxxxx" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tipo": "dinero_fiat",
+    "descripcion": "Transferencia Zelle ref 8847",
+    "valor_estimado_usd": 200,
+    "evento_slug": "terremoto-venezuela-jun-2026",
+    "influencer_slug": "fundacion-manos",
+    "donante_username": "maria_r",
+    "external_ref": "zelle-tx-8847",
+    "estado": "recibida"
+  }'
+```
+
+**Respuesta 201:**
+
+```json
+{
+  "data": {
+    "id": "uuid",
+    "tipo": "dinero_fiat",
+    "estado": "recibida",
+    "valor_estimado_usd": 200,
+    "creado_at": "2026-06-28T15:00:00Z",
+    "external_ref": "zelle-tx-8847"
+  }
+}
+```
+
+**Reenvío con el mismo `external_ref`** devuelve 200 con `idempotent: true`
+y el row original — no crea duplicado.
+
+**Campos:**
+
+- `tipo` (`bienes` | `dinero_fiat`) — obligatorio
+- `descripcion` — obligatorio, 3-1000 chars
+- `valor_estimado_usd` — número ≥ 0, opcional
+- `evento_id` o `evento_slug` — opcional pero recomendado
+- Receptor (obligatorio uno): `centro_id`, `centro_slug`, `influencer_id` o `influencer_slug`
+- `donante_username` — opcional; si no existe en trackdon, queda anónima
+- `external_ref` — opcional, identificador de tu sistema (recomendado para idempotencia)
+- `estado` — `recibida` (default), `rendida_parcial`, `rendida_total`, `observada`
+
+### Errores
+
+| Código | Caso |
+|---|---|
+| 400 | JSON inválido o body > 200 KB |
+| 401 | Key faltante o inválida |
+| 403 | Falta scope requerido |
+| 404 | `evento_slug` / `influencer_slug` / `centro_slug` no existe |
+| 422 | Falló validación zod del payload |
+| 429 | Rate limit excedido (header `retry-after: 60`) |
+| 500 | Error interno (no expone stack) |
+
 ## Estado
 
-**Pre-código.** Este commit es el esqueleto y la documentación. El primer
-sprint trabaja sobre:
-
-- Schema inicial Supabase + RLS deny-all.
-- Roles y políticas.
-- Landing pública.
-- Vista pública de solo lectura (mock).
+**Alpha en producción.** trackdonations.xyz acepta donantes, centros e
+influencers reales. Open source MIT.
 
 ## Cómo contribuir
 

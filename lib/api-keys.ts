@@ -9,8 +9,54 @@ export const VALID_SCOPES = [
   'read:influencers',
   'read:eventos',
   'read:rendiciones',
-  'read:feed'
+  'read:feed',
+  'write',                 // write-all (peligroso, conceder con cuidado)
+  'write:donaciones',
+  'write:cajas'
 ];
+
+// Rate limit: máximo N requests por minuto por api key
+export async function checkRateLimit(apiKeyId: string, perMinute = 60): Promise<{ ok: boolean; recent: number }> {
+  try {
+    const admin = createSupabaseAdmin();
+    const { data } = await admin.rpc('api_key_recent_calls', { p_api_key_id: apiKeyId, p_minutes: 1 });
+    const recent = Number(data ?? 0);
+    return { ok: recent < perMinute, recent };
+  } catch {
+    return { ok: true, recent: 0 };
+  }
+}
+
+export async function logApiCall(params: {
+  apiKeyId: string | null;
+  metodo: string;
+  ruta: string;
+  statusCode: number;
+  ipHash?: string | null;
+  userAgent?: string | null;
+  requestBytes?: number;
+  responseBytes?: number;
+  duracionMs?: number;
+  error?: string | null;
+}) {
+  try {
+    const admin = createSupabaseAdmin();
+    await admin.from('api_call_log').insert({
+      api_key_id: params.apiKeyId,
+      metodo: params.metodo,
+      ruta: params.ruta,
+      status_code: params.statusCode,
+      ip_hash: params.ipHash ?? null,
+      user_agent: params.userAgent ?? null,
+      request_bytes: params.requestBytes ?? null,
+      response_bytes: params.responseBytes ?? null,
+      duracion_ms: params.duracionMs ?? null,
+      error: params.error ?? null
+    });
+  } catch {
+    // log silencioso, no rompemos el response
+  }
+}
 
 export function generateApiKey(): { plain: string; prefix: string; hash: string } {
   const random = crypto.randomBytes(24).toString('base64url'); // 32 chars
